@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pandawork.nenu.oa.mapper.dispatch.StuDispatchMapper">
+    <select id="queryDispatchByStuId" parameterType="int" resultMap="pw.DispatchInfo">
+    SELECT
+        tdi.id AS id,
+        tdi.stu_status_info_id AS statusInfoId,
+        tdi.agreement_number AS agreementNumber,
+        tdi.whereaboutgo_id AS whereaboutgoId,
+        twc.whereaboutgo AS whereaboutgo,
+        tdi.company_name AS companyName,
+        tdi.organization_code AS organizationCode,
+        tdi.city_id AS cityId,
+        tpc.show_name AS cityName,
+        tdi.property_id AS propertyId,
+        tcp.property_name AS propertyName,
+        tdi.trade_id AS tradeId,
+        tct.trade_name AS tradeName,
+        tdi.subordinate_department AS subordinateDepartment,
+        tdi.job_id AS jobId,
+        tjc.job AS job,
+        tdi.full_address AS fullAddress,
+        tdi.company_postcode AS companyPostcode,
+        tdi.company_contact_person AS companyContactPerson,
+        tdi.contact_person_fax AS contactPersonFax,
+        tdi.contact_person_tele AS contactPersonTele,
+        tdi.contact_person_mobile AS contactPersonMobile,
+        tdi.contact_person_email AS contactPersonEmail,
+        tdi.report_mode_id AS reportModeId,
+        trc.report_mode AS reportMode,
+        tdi.report_company AS reportCompany,
+        tdi.report_company_address AS reportCompanyAddress,
+        tpc1.show_name AS reportAddressName,
+        tdi.accept_file AS acceptFile,
+        tdi.file_company_postcode AS fileCompanyPostcode,
+        tdi.file_company AS fileCompany,
+        tdi.file_company_address AS fileCompanyAddress,
+        tpc2.show_name AS fileAddressName,
+        tdi.accept_file_department AS acceptFileDepartment,
+        tdi.accept_file_person AS acceptFilePerson,
+        tdi.accept_file_tele AS acceptFileTele,
+        tdi.accept_hukou AS acceptHukou,
+        tdi.material_id AS materialId,
+        tdi.counsellor_check_result AS counsellorCheckResult,
+        tdi.counsellor_check_reason AS counsellorCheckReason,
+        tdi.counsellor_check_time AS counsellorCheckTime,
+        tdi.deputy_secretary_check_result AS deputySecretaryCheckResult,
+        tdi.deputy_secretary_check_reason AS deputySecretaryCheckReason,
+        tdi.deputy_secretary_check_time AS deputySecretaryCheckTime,
+        tdi.school_check_result AS schoolCheckResult,
+        tdi.school_check_reason AS schoolCheckReason,
+        tdi.school_check_time AS schoolCheckTime,
+        tdi.check_status AS checkStatus,
+        tdi.hukou_transfer_address AS hukouTransferAddress,
+        tdi.stu_remark AS stuRemark
+    FROM
+        t_dispatch_info tdi
+        LEFT JOIN t_whereaboutgo_code twc ON tdi.whereaboutgo_id = twc.whereaboutgo_id
+        LEFT JOIN t_place_code tpc ON tdi.city_id = tpc.place_id
+        LEFT JOIN t_company_property tcp ON tdi.property_id = tcp.property_code
+        LEFT JOIN t_company_trade tct ON tdi.trade_id = tct.trade_id
+        LEFT JOIN t_job_code tjc ON tdi.job_id = tjc.job_id
+        LEFT JOIN t_report_code trc ON tdi.report_mode_id = trc.report_mode_id
+        LEFT JOIN t_place_code tpc1 ON tdi.report_company_address = tpc1.place_id
+        LEFT JOIN t_place_code tpc2 ON tdi.file_company_address = tpc2.place_id
+    WHERE tdi.stu_status_info_id = #{statusInfoId} AND tdi.current_agreement = 1;
+    </select>
+
+    <select id="queryRemarksByStuId" parameterType="int" resultType = "com.pandawork.nenu.oa.common.dto.dispatch.DispatchRemarksDto">
+    SELECT
+        city_id AS cityId,
+        origin_place_code AS originPlaceCode,
+        training_mode_code AS trainingModeCode,
+        normal_stu_code AS normalStuCode,
+        stu_status_info_id AS statusInfoId
+    FROM
+        t_dispatch_info tdi,t_stu_status_information tssi
+    WHERE tssi.id = #{statusInfoId} AND tdi.stu_status_info_id = #{statusInfoId} AND tdi.current_agreement = 1 ;
+    </select>
+</mapper>
+

@@ -1,0 +1,84 @@
+.select-date-box {
+	display: inline-block;
+	position: relative;
+}
+.date-box {
+	display: none;
+	position: absolute;
+	top: 33px;
+	left: 0;
+	width: 294px;
+	height: 240px;
+	font-size: 16px;
+	line-height: 24px !important;
+	border: 1px solid #c1c1c1;
+	background-color: #fff;
+	z-index: 1;
+}
+.date-box li {
+	float: left;
+	width: 42px;
+	text-align: center;
+	list-style: none;
+}
+.select-date {
+	display: inline-block;
+	padding:3px;
+	background: url(../../../../img/admin_page/business_handling/calendar.png) no-repeat 97% center;
+	cursor: pointer;
+	width:200px;
+	line-height:18px;
+	border:1px solid #707070; 
+}
+.date-box li:nth-child(-n+7) {
+	height: 40px;
+	color: #fff;
+	font-weight: bold;
+	line-height: 40px;
+	/*background: #1A84ED;*/
+	background:#438eb9;
+}
+.date-box li:nth-child(-n+7) a:link {
+	color: #fff;
+}
+.date-box li:nth-child(n+8):nth-child(-n+14) {
+	color: #1A84ED;
+	border-bottom: 1px solid #a1a1a1;
+}
+.date a {
+	/*color: #1A84ED;*/
+	color:#438eb9;
+}
+
+/*.sure {
+	cursor: pointer;
+}*/
+.clear {
+	cursor: pointer;
+}
+.date-today {
+	/*background-color: #1A84ED !important;*/
+	background-color: #438eb9 !important; 
+	
+	
+}
+.daye-today  a:link{
+	color: #fff !important;
+}
+.date-today-link {
+	color: #fff !important;
+}
+.date-prev a,.date-next a {
+	color: #c1c1c1;
+}
+.select-date-box a {
+	background: transparent;
+	border:none;
+	height:20px;
+	line-height: 20px;
+	margin:0;
+	width:42px;
+}
+.disabled-color {
+	color:#9D9C9C!important;
+}

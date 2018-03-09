@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.user.UserInfoMapper">
+
+    <delete id="delByUserId">
+        DELETE
+        FROM `t_sys_user_info`
+        WHERE `user_id` = #{userId}
+    </delete>
+
+    <select id="listCollegesById" resultType="String">
+        SELECT `college_code`
+        FROM `t_sys_user_info`
+        WHERE `user_id` = #{id}
+    </select>
+
+    <select id="listMajorsById" resultType="String">
+        SELECT `major_code`
+        FROM `t_sys_user_info`
+        WHERE `user_id` = #{id}
+    </select>
+
+    <!--辅导员级别的专业查询-->
+    <select id="listMajorsAndQualificationById" resultType="UserInfoDto">
+        SELECT `college_code` AS collegeCode,
+        `major_qualification` AS majorQualification,
+        `major_code` AS majorCode
+        FROM `t_sys_user_info`
+        WHERE `user_id` = #{id}
+    </select>
+
+    <!--副书记级别的专业查询-->
+    <select id="listMajorsAndQualificationByCollege" resultType="UserInfoDto">
+        SELECT DISTINCT  `major_qualification` AS majorQualification,
+        `major_code` AS majorCode
+        FROM `t_sys_user_info`,`t_sys_users_roles`
+        WHERE `college_code` IN (SELECT `college_code` FROM `t_sys_user_info` WHERE `user_id` = #{id}) AND  `t_sys_user_info`.user_id = `t_sys_users_roles`.user_id AND role_id =5
+    </select>
+</mapper>

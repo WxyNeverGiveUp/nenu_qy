@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pandawork.nenu.oa.mapper.statistics.EmploymentStatisticsMapper">
+    <select id="countAboutQualification" resultType="int">
+        SELECT COUNT(*)
+        FROM `t_dispatch_info` tdi, `t_stu_status_information` tssi
+        WHERE tdi.`stu_status_info_id` = tssi.`id`
+            AND `whereaboutgo_id` = #{whereaboutgoId}
+            AND tdi.`check_status` > 4
+			AND tssi.`college_code` = #{collegeCode}
+			AND tdi.`year` = #{year}
+			<include refid="qualificationCondition" />
+    </select>
+
+    <select id="countAboutNormal" resultType="int">
+        SELECT COUNT(*)
+        FROM `t_dispatch_info` tdi, `t_stu_status_information` tssi
+        WHERE `whereaboutgo_id` = #{whereaboutgoId}
+            AND tdi.`check_status` > 4
+			AND tdi.`stu_status_info_id` = tssi.`id`
+			AND tssi.`college_code` = #{collegeCode}
+			AND tdi.`year` = #{year}
+			<include refid="normalCondition" />
+    </select>
+
+    <select id="countAllAboutQualification" resultType="int">
+        SELECT COUNT(*)
+        FROM `t_stu_status_information` tssi
+        WHERE
+          tssi.`year` = #{year}
+          <if test="collegeCode != 0">
+              AND tssi.`college_code` = #{collegeCode}
+          </if>
+          <include refid="qualificationCondition" />
+    </select>
+
+    <select id="countAllAboutNormal" resultType="int">
+        SELECT COUNT(*)
+        FROM `t_stu_status_information` tssi
+        WHERE
+        tssi.`year` = #{year}
+        <if test="collegeCode != 0">
+            AND tssi.`college_code` = #{collegeCode}
+        </if>
+        <include refid="normalCondition" />
+    </select>
+
+    <select id="listEmploymentInfo" resultType="EmploymentInfoExportDto">
+        SELECT
+        intend.status_info_id as statusId,
+        tssi.name as name,
+        tssi.cellphone as cellphone,
+        tssi.id_number as idNumber,
+        tssi.candidate_number as candidateNumber,
+        tssi.student_number as studentNumber,
+        (SELECT CASE WHEN tssi.`sex` = 1 THEN "男" WHEN tssi.`sex` = 2 THEN "女" END) as sex,
+        tssi.nation_code as nationCode,
+        (SELECT nation FROM t_nation_code WHERE t_nation_code.nation_id = tssi.nation_code) as nation,
+        (SELECT tpc.political_stand FROM t_political_code tpc WHERE tpc.political_stand_id = tssi.political_stand_code) as politicalStand,
+        tssi.school_code as schoolCode,
+        (SELECT tsc.school FROM t_school_code tsc WHERE tsc.school_id = tssi.school_code) as school,
+        tssi.stu_length as stuLength,
+        (SELECT CASE WHEN tssi.`qualification_now` = 1 THEN "本专科生" WHEN tssi.`qualification_now` = 2 THEN "研究生" END) as qualificationNow,
+        (SELECT tqc.qualification FROM t_qualification_code tqc WHERE tqc.qualification_id = tssi.qualification_code ) as qualification,
+        tssi.college_code as collegeCode,
+        (SELECT tcc.college FROM t_college_code tcc WHERE tcc.college_id = tssi.college_code) as college,
+        tssi.grade as grade,
+        tssi.major_qualification as majorQualification,
+        tssi.major_code as majorCode,
+        (SELECT tmc.`major_name` FROM `t_major_code` tmc WHERE tssi.`major_code` = tmc.`major_id` AND tssi.`major_qualification` = tmc.`qualification`) as major,
+        tssi.other_major as otherMajor,
+        (SELECT twic.`whereaboutgo` FROM `t_whereaboutgo_intend_code` twic WHERE tssi.`intend_whereabouts_code` = twic.`whereaboutgo_id`) as intendWhereabouts,
+        (SELECT tdc.`difficulty_mode` FROM `t_difficulty_code` tdc WHERE tssi.`difficulty_code` = tdc.`difficulty_id`) as difficulty,
+        (SELECT tnc.`normal_stu` FROM `t_normal_code` tnc WHERE tssi.`normal_stu_code` = tnc.`normal_stu_id`) as normalStu,
+        (SELECT tpc.`show_name` FROM `t_place_code` tpc WHERE tssi.`origin_place_code` = tpc.`place_id`) as originPlace,
+        tssi.origin_place_code as originPlaceCode,
+        (SELECT ttmc.`training_mode` FROM `t_training_mode_code` ttmc WHERE tssi.`training_mode_code` = ttmc.`training_mode_id`) as trainingMode,
+        intend.pk_1 as pk1,
+        intend.pk_2 as pk2,
+        intend.undergraduate as underGraduate,
+        intend.pk_3 as pk3,
+        intend.other_guidance as otherGuidance,
+        intend.pk_4 as pk4,
+        intend.pk_5 as pk5,
+        intend.pk_6 as pk6,
+        intend.pk_7 as pk7,
+        intend.pk_8 as pk8,
+        intend.pk_9 as pk9,
+        intend.pk_10 as pk10
+        FROM
+            (SELECT *
+             FROM t_stu_intention_survey
+             WHERE id in (
+             SELECT Max(id)
+             FROM t_stu_intention_survey
+             GROUP BY status_info_id) ) intend
+		LEFT JOIN t_stu_status_information tssi ON intend.status_info_id = tssi.id
+    </select>
+
+    <!--<select id="countAboutNormalAndWeipei" resultType="int">-->
+        <!--SELECT COUNT(*)-->
+        <!--FROM `t_dispatch_info` tdi, `t_stu_status_information` tssi-->
+        <!--WHERE-->
+        <!--tdi.`stu_status_info_id` = tssi.`id`-->
+        <!--<if test="code == 1">-->
+            <!--AND tssi.`normal_stu_code` != 12-->
+        <!--</if>-->
+        <!--<if test="code == 2">-->
+            <!--AND tssi.`training_mode_code` != 4-->
+        <!--</if>-->
+        <!--<if test="code == 3">-->
+            <!--AND tssi.`normal_stu_code` != 12 AND tssi.`training_mode_code` != 4-->
+        <!--</if>-->
+        <!--AND tssi.`college_code` = #{collegeCode}-->
+        <!--AND tdi.`year` = #{year}-->
+
+        <!--AND whereaboutgo_id != 70-->
+        <!--AND whereaboutgo_id != 72-->
+        <!--AND whereaboutgo_id != 76-->
+    <!--</select>-->
+
+    <!--<select id="countFreeNormal" resultType="int">-->
+        <!--SELECT COUNT(*)-->
+        <!--FROM `t_stu_status_information` tssi-->
+        <!--WHERE-->
+          <!--`year` = #{year}-->
+          <!--AND `college_code` = #{collegeCode}-->
+          <!--AND `normal_stu_code` = 12-->
+    <!--</select>-->
+
+    <!--<select id="countWeipei" resultType="int">-->
+        <!--SELECT COUNT(*)-->
+        <!--FROM `t_stu_status_information` tssi-->
+        <!--WHERE-->
+          <!--`year` = #{year}-->
+          <!--AND `college_code` = #{collegeCode}-->
+          <!--AND `training_mode_code` = 4-->
+    <!--</select>-->
+
+    <!--<select id="countFreeNormalOrWeipei" resultType="int">-->
+        <!--SELECT COUNT(*)-->
+        <!--FROM `t_stu_status_information` tssi-->
+        <!--WHERE-->
+          <!--`year` = #{year}-->
+          <!--AND `college_code` = #{collegeCode}-->
+          <!--AND-->
+            <!--(`training_mode_code` = 4-->
+              <!--OR`normal_stu_code` = 12-->
+            <!--)-->
+    <!--</select>-->
+
+    <select id="countEmploymentIncludeFreeNormal" resultType="int">
+        SELECT COUNT(DISTINCT tssi.`id`)
+        FROM `t_stu_status_information` tssi, `t_dispatch_info` tdi
+        WHERE
+        (
+          (tssi.`id` = tdi.`stu_status_info_id`
+            AND tdi.`whereaboutgo_id` != 70
+            AND tdi.`whereaboutgo_id` != 71
+            AND tdi.`whereaboutgo_id` != 72
+            AND tdi.`check_status` > 4)
+          OR tssi.`normal_stu_code` = 12)
+        AND tssi.`year` = #{year}
+        AND tssi.`college_code` = #{collegeCode}
+
+        <!--<include refid="qualificationCondition" />-->
+    </select>
+
+    <!--<select id="countEmploymentIncludeFreeNormalAboutNormal" resultType="int">-->
+        <!--SELECT COUNT(DISTINCT tssi.id)-->
+        <!--FROM `t_stu_status_information` tssi, `t_dispatch_info` tdi-->
+        <!--WHERE-->
+        <!--(tssi.`id` = tdi.`stu_status_info_id`-->
+        <!--OR tssi.`normal_stu_code` = 12)-->
+        <!--AND tssi.`year` = #{year}-->
+        <!--AND tssi.`college_code` = #{collegeCode}-->
+        <!--<include refid="normalCondition" />-->
+    <!--</select>-->
+
+    <select id="countEmploymentIncludeWeipei" resultType="int">
+        SELECT COUNT(DISTINCT tssi.`id`)
+        FROM `t_stu_status_information` tssi, `t_dispatch_info` tdi
+        WHERE
+        (
+          (tssi.`id` = tdi.`stu_status_info_id`
+              AND tdi.`whereaboutgo_id` != 70
+              AND tdi.`whereaboutgo_id` != 71
+              AND tdi.`whereaboutgo_id` != 72
+              AND tdi.`check_status` > 4)
+          OR tssi.`training_mode_code` = 4)
+        AND tssi.`year` = #{year}
+        AND tssi.`college_code` = #{collegeCode}
+        <!--<include refid="qualificationCondition" />-->
+    </select>
+
+    <!--<select id="countEmploymentIncludeWeipeiAboutNormal" resultType="int">-->
+        <!--SELECT COUNT(DISTINCT tssi.id)-->
+        <!--FROM `t_stu_status_information` tssi, `t_dispatch_info` tdi-->
+        <!--WHERE-->
+        <!--(tssi.`id` = tdi.`stu_status_info_id`-->
+        <!--OR tssi.`training_mode_code` = 4)-->
+        <!--AND tssi.`year` = #{year}-->
+        <!--AND tssi.`college_code` = #{collegeCode}-->
+        <!--<include refid="normalCondition" />-->
+    <!--</select>-->
+
+    <select id="countEmploymentIncludeFreeNormalAndWeipei" resultType="int">
+        SELECT COUNT(DISTINCT tssi.`id`)
+        FROM `t_stu_status_information` tssi, `t_dispatch_info` tdi
+        WHERE
+        (
+          (tssi.`id` = tdi.`stu_status_info_id`
+            AND tdi.`whereaboutgo_id` != 70
+            AND tdi.`whereaboutgo_id` != 71
+            AND tdi.`whereaboutgo_id` != 72
+            AND tdi.`check_status` > 4)
+          OR tssi.`training_mode_code` = 4
+          OR tssi.`normal_stu_code` = 12)
+        AND tssi.`year` = #{year}
+        AND tssi.`college_code` = #{collegeCode}
+        <!--<include refid="qualificationCondition" />-->
+    </select>
+
+    <!--<select id="countEmploymentIncludeFreeNormalAndWeipeiAboutNormal" resultType="int">-->
+        <!--SELECT COUNT(DISTINCT tssi.id)-->
+        <!--FROM `t_stu_status_information` tssi, `t_dispatch_info` tdi-->
+        <!--WHERE-->
+        <!--(tssi.`id` = tdi.`stu_status_info_id`-->
+        <!--OR tssi.`training_mode_code` = 4-->
+        <!--OR tssi.`normal_stu_code` = 12)-->
+        <!--AND tssi.`year` = #{year}-->
+        <!--AND tssi.`college_code` = #{collegeCode}-->
+        <!--<include refid="normalCondition" />-->
+    <!--</select>-->
+
+    <sql id="qualificationCondition">
+        <if test="qualificationCode == 1">
+            AND (tssi.`qualification_code` = 31 OR tssi.`qualification_code` = 33)
+        </if>
+        <if test="qualificationCode == 2">
+            AND (tssi.`qualification_code` = 11 OR tssi.`qualification_code` = 13)
+        </if>
+        <if test="qualificationCode == 6">
+            AND (tssi.`qualification_code` = 01 OR tssi.`qualification_code` = 03)
+        </if>
+        <if test="qualificationCode == 7">
+            AND (tssi.`qualification_code` = 01 OR tssi.`qualification_code` = 03
+            OR tssi.`qualification_code` = 11 OR tssi.`qualification_code` = 13)
+        </if>
+    </sql>
+
+    <sql id="normalCondition">
+        <if test="normalStuCode == 3">
+            AND (tssi.`normal_stu_code` = 1 OR  tssi.`normal_stu_code` = 12)
+        </if>
+        <if test="normalStuCode == 4">
+            AND tssi.`normal_stu_code` = 12
+        </if>
+        <if test="normalStuCode == 5">
+            AND tssi.`normal_stu_code` = 2
+        </if>
+    </sql>
+</mapper>

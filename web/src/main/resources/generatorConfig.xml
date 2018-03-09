@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <!-- 数据库驱动包位置 (需要根据自己的路径修改)-->
+    <classPathEntry location="D:\mvn_repo\mysql\mysql-connector-java\5.1.18\mysql-connector-java-5.1.18.jar"/>
+    <context id="Tables" targetRuntime="MyBatis3">
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+        <!-- 数据库链接URL、用户名、密码 （定制修改）-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://59.73.215.230:3306/db_nenu_jysj?useUnicode=true&amp;characterEncoding=UTF-8"
+                        userId="join" password="zhuoyinzhuoyin"></jdbcConnection>
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        <!-- 生成模型的包名和位置 （targetPackage和targetProject根据自己要求修改）-->
+        <javaModelGenerator targetPackage="entity"
+                            targetProject="D:\wlm\jy\就业数据\src">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+        <!-- 生成的映射文件包名和位置 （targetPackage和targetProject根据自己要求修改）-->
+        <sqlMapGenerator targetPackage="xml"
+                         targetProject="D:\wlm\jy\就业数据\src">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+        <!-- 生成DAO的包名和位置 （targetPackage和targetProject根据自己要求修改）-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="mapper"
+                             targetProject="D:\wlm\jy\就业数据\src">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+        <!-- 要生成那些表(更改tableName和domainObjectName就可以，多个表的话复制table标签在后边排列即可) -->
+        <table schema="db_nenu_jysj" tableName="t_comments" domainObjectName="Commnets" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" />
+    </context>
+</generatorConfiguration>

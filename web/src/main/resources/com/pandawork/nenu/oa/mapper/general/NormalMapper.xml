@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.general.NormalMapper">
+
+    <select id="queryByCode" resultMap="pw.NormalCode">
+        SELECT `id`, `normal_stu_id`, `normal_stu`
+        FROM `t_normal_code`
+        WHERE `normal_stu_id` = #{normalStuId}
+    </select>
+
+    <select id="listAll" resultMap="pw.NormalCode">
+        SELECT `id`, `normal_stu_id`, `normal_stu`
+        FROM `t_normal_code`
+    </select>
+
+</mapper>

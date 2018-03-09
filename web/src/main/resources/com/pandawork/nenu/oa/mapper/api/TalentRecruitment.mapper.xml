@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pandawork.nenu.oa.mapper.api.TalentRecruitmentMapper">
+
+    <select id="listByCondition" resultType="TalentRecruitmentDto">
+        SELECT
+            `student_number` AS stuNumber,
+            `name` AS name,
+            (SELECT CASE WHEN tssi.`sex` = 1 THEN "男" WHEN tssi.`sex` = 2 THEN "女" END) AS sex,
+            (SELECT tmc.`major_name` FROM `t_major_code` tmc WHERE tssi.`major_code` = tmc.`major_id` AND tmc.`qualification` = tssi.`major_qualification`) AS majorName,
+            `origin_place` AS originPlace,
+            `major_qualification` AS majorQualification,
+            `pk_5` AS monthlyPay,
+            `pk_4` AS place
+        FROM `t_stu_status_information` tssi LEFT JOIN `t_stu_intention_survey` tsis ON `tssi`.id = `tsis`.status_info_id
+        <where>
+            <include refid="queryCondition"/>
+        </where>
+    </select>
+
+    <select id="countByCondition" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `t_stu_status_information` tssi LEFT JOIN `t_stu_intention_survey` tsis ON `tssi`.id = `tsis`.status_info_id
+        <where>
+            <include refid="queryCondition"/>
+        </where>
+    </select>
+
+    <sql id="queryCondition">
+        tsis.`pk_1`=1
+        <if test="qualification != null and qualification != ''">
+            AND tssi.`major_qualification` = #{qualification}
+        </if>
+
+        <if test="majors != null and majors.size() > 0">
+            AND tssi.`major_code` IN
+            <foreach collection="majors" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="provinceCode > 0">
+            AND tssi.`origin_place_code`  LIKE CONCAT(#{provinceCode}, '%')
+        </if>
+
+        <if test="normalStu > 0">
+            AND tssi.`normal_stu_code` = #{normalStu}
+        </if>
+    </sql>
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pandawork.nenu.oa.mapper.data.VerifyMapper">
+    <select id="getAllColleges" resultType="String">
+    SELECT college FROM t_college_code;
+    </select>
+
+    <select id="numsOfGraduation" parameterType="com.pandawork.nenu.oa.common.dto.data.VarifyQueryDto" resultType="Integer">
+        SELECT COUNT(id )FROM t_stu_info WHERE college_name = #{college} AND qualification_study = #{qualification}
+        <if test="grade != null and grade.length() != 0">
+            AND graduation_time LIKE CONCAT(#{grade}, "%" )
+        </if>;
+    </select>
+
+
+    <!--<select id="numsOfGraduation" parameterType="hashmap" resultType="Integer">-->
+      <!--SELECT COUNT(id )FROM t_stu_info WHERE college_name = #{college} AND qualification_study = #{qualification};-->
+    <!--</select>-->
+
+    <select id="numsOfVerifying" parameterType="com.pandawork.nenu.oa.common.dto.data.VarifyQueryDto" resultType="Integer">
+        SELECT COUNT(id )FROM t_stu_info WHERE college_name = #{college} AND qualification_study = #{qualification}
+        AND
+        verify_status = "待审核"
+        <if test="grade != null and grade.length() != 0">
+            AND graduation_time LIKE CONCAT(#{grade}, "%" )
+        </if>;
+    </select>
+    <!--<select id="numsOfVerifying" parameterType="hashmap" resultType="Integer">-->
+        <!--SELECT COUNT(id )FROM t_stu_info WHERE college_name = #{college} AND qualification_study = #{qualification}-->
+        <!--AND-->
+        <!--verify_status = "待审核";-->
+    <!--</select>-->
+
+    <select id="verifyer" parameterType="hashmap" resultType="String">
+        SELECT real_name  FROM t_sys_users tu LEFT JOIN t_sys_users_roles tr ON tu.id = tr.user_id
+        <where>
+            <if test="college != null and college.length() != 0" >
+                college = #{college}
+            </if>
+            <if test="qualification != null and qualification.length() != 0">
+                AND verify_qualification = #{qualification}
+            </if>
+            AND tr.role_id = 11
+        </where>
+    </select>
+
+   <select id="updateLastLoginTime">
+        UPDATE t_sys_users SET last_login_time = #{1} where id = #{0}
+    </select>
+
+    <select id="lastLoginTime" parameterType="Integer" resultType="Date">
+        SELECT last_login_time FROM t_sys_users where id = #{id}
+    </select>
+
+    <select id="updateVerifyCompleteTime">
+        UPDATE t_sys_users SET verify_complete_time = #{1} where id = #{0}
+    </select>
+
+</mapper>

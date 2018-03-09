@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.general.TrainingModeMapper">
+
+    <select id="queryByCode" resultMap="pw.TrainingModeCode">
+        SELECT `id`, `training_mode_id`, `training_mode`
+        FROM `t_training_mode_code`
+        WHERE `training_mode_id` = #{code}
+    </select>
+
+    <select id="listAll" resultMap="pw.TrainingModeCode">
+        SELECT `id`, `training_mode_id`, `training_mode`
+        FROM `t_training_mode_code`
+    </select>
+</mapper>

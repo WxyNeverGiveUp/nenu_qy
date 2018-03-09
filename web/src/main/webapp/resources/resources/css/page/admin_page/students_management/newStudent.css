@@ -1,0 +1,209 @@
+/*添加major-name/other-major类及之后的样式，修改origin类的样式*/
+*{
+	margin: 0;
+	padding: 0;
+	font-family: "Microsoft Yahei";
+}
+body{
+	min-width: 622px;
+}
+.alertWrapper{
+	height: 60px;
+	margin-left: 10.4%;
+}
+.headTitle{
+	margin: 1% 0px 10px 15.6%;
+	font-size: 20px;
+}
+.J_complete-form{
+	margin: 0px 0px 0px 222px;
+	border: 1px solid #ccc;
+	padding: 50px 0px;
+}
+.divCommon{
+	width: 23%;
+	height: 28px;
+	padding: 20px 0px;
+	text-align: right;
+	float: left;
+}
+.update-position {
+	position: relative;
+	left:28px;
+}
+.selectCommon{
+	width: 584px;
+	height: 25px;
+	float: left;
+	padding: 20px 0px;
+}
+label{
+	display: inline-block;
+	width: 37%;
+	text-align: right;
+	vertical-align: middle;
+}
+input[type="text"]{
+	width: 47%;
+	height: 2em;
+}
+.J_stuName,.J_idNumber,.J_stuNumber,.J_candidateNum{
+	display: none;
+}
+.company{
+	clear: both;
+}
+.fontColor{
+	color: red;
+}
+select{
+	width: 48%;
+	height: 2.166em;
+}
+.areaFidle{
+	position: relative;
+	background: #fff;
+	border: 1px solid #2679b5;
+	margin-left: 52%;
+	width: 57%;
+	max-height: 112px;
+	text-align: left;
+	z-index: 10;
+	overflow-y: auto;
+}
+.position{
+	color: #000;
+}
+.areaFidle li {
+	cursor: pointer;
+	height: 28px;
+	line-height: 28px;
+
+}
+.local-code,.unit-code {
+	border: 0;
+	width: 50px !important;
+}
+.clearfix{
+	clear: both;
+}
+.areaCode{
+	width: 16.5%;
+	float: left;
+	padding-top: 21px;
+}
+.weipei{
+	padding-left: 5.7%;
+}
+.shengyuan{
+	padding-left: 5.7%;
+}
+.origin{
+	float: left;
+	padding: 1.6% 0 1.6% 3.7%;
+	position: relative;
+}
+.stuNum{
+	padding: 20px 0px;
+}
+.J_orientation{
+	display: none;
+}
+.submitWrapper{
+	clear: both;
+	text-align: right;
+	padding-top: 45px;
+	padding-right: 45px;
+}
+.newStudentSubmit{
+	width: 92px;
+	background: #6fb3e0;
+	border: 0;
+	color: white;
+	height: 32px;
+	font-size: 14px;
+}
+.change-sex label[for="male"],
+.change-sex label[for="female"]{
+	width: 5%;
+}
+.change-sex input{
+	margin-left: 13%;
+	vertical-align: -4px;
+}
+.major-name {
+	width: 65.5%;
+}
+.major-name select {
+	width: 17.3%;
+}
+.major-name label {
+	width:4.8%;
+	text-align: center;
+}
+.major-name .major-label {
+	width:12.4%;
+	text-align: right;
+}
+.other-major {
+	display:none;
+}
+.other-major label {
+	width:34.7%;
+}
+.update-parent {
+	position: relative;
+}
+.update-a {
+	position: absolute;
+	top:25px;
+	right:-27px;
+}
+/*弹出框*/
+.hint-box {
+	position: fixed;
+	top: 30%;
+	left: 38%;
+	background: #fff;
+	width: 477px;
+	height: 305px;
+	box-shadow: 0 0 30px;
+	font-size: 12px;
+	z-index: 1000;
+}
+.hint-box > div:first-child,.delete-box > div:first-child {
+	border: 1px solid #ddd;
+	height: 24px;
+	padding: 5px 20px;
+	color: #fff;
+	font-size: 14px;
+	background: rgb(67,142,185);
+}
+.hint span,.delete-info span {
+	float: right;
+	cursor: pointer;
+}
+.delete-info span {
+	margin-top: -20px;
+}
+.hint-box p,.delete-box p {
+	vertical-align: center;
+	font-size: 14px;
+}
+.close-btn,.close-button {
+	display: inline-block;
+	height: 28px;
+	line-height: 28px;
+	background-color: #438eb9 !important;
+	border: 0 solid #438eb9;
+	color: #ffffff;
+	border: 1px solid #ddd;
+	text-align: center;
+	cursor: pointer;
+	border-radius: 5px;
+	margin: 0 188px;
+}
+.close-btn {
+	width: 120px;
+	margin: 0 188px;
+}

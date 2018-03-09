@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pandawork.nenu.oa.mapper.company.CompanyMapper">
+    <resultMap id="companyMap" type="com.pandawork.nenu.oa.common.entity.company.Company">
+        <result property="id" column="id"></result>
+        <result property="companyName" column="company_name"></result>
+    </resultMap>
+
+    <select id="listCompany" resultMap="companyMap">
+        SELECT
+        id ,company_name
+        FROM t_company
+        WHERE type_id in (1 , 3 , 6)
+    </select>
+
+    <select id="getCompany" resultMap="companyMap" parameterType="int">
+        SELECT
+        id ,company_name
+        FROM t_company
+        WHERE id = #{id}
+    </select>
+
+    <select id="listAllCompanyDto" resultType="CompanyDto">
+        SELECT id,
+        company_name AS cnName,
+        spell_initial AS enName
+        FROM t_company
+    </select>
+</mapper>

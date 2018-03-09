@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pandawork.nenu.oa.mapper.user.UserRoleMapper">
+    <select id="listRoles" resultType="String">
+        select tsr.role as role
+        from t_sys_roles tsr,
+             t_sys_users tsu,
+             t_sys_users_roles tsur
+        where tsu.id = tsur.user_id and
+              tsur.role_id = tsr.id and
+              tsu.username = #{username}
+    </select>
+    <select id="listRoleByUserId" resultType="Integer">
+        select role_id
+        from t_sys_users_roles
+        where user_id=#{id}
+    </select>
+
+    <select id="listUserRoleIdByUserId" resultType="Integer">
+        select id from t_sys_users_roles where user_id=#{userId}
+    </select>
+    <select id="listUsersByRoleId" resultMap="pw.User">
+        select
+        users.id as id,
+        users.real_name as real_name,
+        users.cellphone as cellphone
+        from
+        t_sys_users as users,
+        t_sys_users_roles as userRole
+        WHERE
+        userRole.user_id = users.id AND
+        userRole.role_id = #{roleId}
+    </select>
+
+    <select id="getRolesByUsername" resultType="Integer">
+      select userRole.role_id
+      from
+      t_sys_users as users,
+      t_sys_users_roles as userRole
+      where users.username = #{username}
+      and users.id = userRole.user_id
+    </select>
+    
+    <select id="queryUserIdByRoleIds" resultType="Integer">
+        select distinct(user_id) from t_sys_users_roles  where role_id in ${roles}
+    </select>
+
+    <select id="RoleIdsByUserId" resultType="Integer">
+        select role_id from t_sys_users_roles  where  user_id = #{userId}
+    </select>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.general.NationMapper">
+
+    <select id="queryByNationId" resultMap="pw.NationCode">
+        SELECT `id`, `nation_id`, `nation`
+        FROM `t_nation_code`
+        WHERE `nation_id` = #{nationId}
+    </select>
+
+    <select id="listAll" resultMap="pw.NationCode">
+        SELECT `id`, `nation_id`, `nation`
+        FROM `t_nation_code`
+    </select>
+
+</mapper>

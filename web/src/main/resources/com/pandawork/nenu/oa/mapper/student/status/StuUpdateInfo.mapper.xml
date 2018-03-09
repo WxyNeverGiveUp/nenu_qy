@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pandawork.nenu.oa.mapper.student.status.StuUpdateInfoMapper">
+
+    <select id="listLatestByStuStatusInfoId" resultMap="pw.StuUpdateInfo">
+        SELECT `id`, `status_info_id`, `before_update`, `after_update`, `update_type`, `created_time`, `last_modified_time`
+        FROM (SELECT * FROM `t_stu_update_info` ORDER  BY `id` DESC) AS T
+        WHERE `status_info_id` = #{stuStatusInfoId}
+        <if test="isStudent ==1">
+            AND `alter_by_who` = 0
+        </if>
+        GROUP BY T.`update_type`
+    </select>
+
+    <select id="listByStuStatusInfoId" resultMap="pw.StuUpdateInfo">
+        SELECT `id`, `status_info_id`, `before_update`, `after_update`, `update_type`, `created_time`, `last_modified_time`
+        FROM `t_stu_update_info`
+        WHERE `status_info_id` = #{stuStatusInfoId}
+    </select>
+
+    <select id="listByStatusInfoIdAndType" resultMap="pw.StuUpdateInfo">
+        SELECT `id`, `status_info_id`, `before_update`, `after_update`, `update_type`, `created_time`, `last_modified_time`
+        FROM `t_stu_update_info`
+        WHERE `status_info_id` = #{stuStatusInfoId}
+        AND `update_type` = #{type}
+    </select>
+</mapper>

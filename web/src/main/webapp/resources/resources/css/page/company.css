@@ -1,0 +1,25 @@
+/*-----------------------------------------------------------------------------
+* @Description: 单位管理样式 (company.css)
+* @Version: 	V1.0.0
+* @author: 		chenke(396985267@qq.com)
+* @date			2014.08.11
+* ==NOTES:=============================================
+* v1.0.0(2014.08.11):
+* 	初始生成 
+* ---------------------------------------------------------------------------*/
+.control-area-long .select-90{
+	min-width: 90px;
+}
+.new-btn-pos{
+	position: absolute;
+	bottom: 5px;
+	right:25px;
+}
+.submit-btn-div{
+	width: 195px;
+	margin: 0 auto;
+}
+
+.blank{
+	height: 20px;
+}

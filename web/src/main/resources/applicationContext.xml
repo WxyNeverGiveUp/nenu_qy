@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://www.pandawork.net/web/schema/mvc"
+	   xsi:schemaLocation="http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.pandawork.net/web/schema/mvc http://www.pandawork.net/web/schema/mvc/spring-mvc.xsd"
+	   default-autowire="byName" default-lazy-init="false">
+
+	<bean class="com.pandawork.core.framework.bean.StaticAutoWireBeanPostProcessor" />
+
+
+    <!-- 隐式地向 Spring 容器注册AutowiredAnnotationBeanPostProcessor,CommonAnnotationBeanPostProcessor,PersistenceAnnotationBeanPostProcessor,RequiredAnnotationBeanPostProcessor -->
+	<context:annotation-config />
+	<!-- enable transaction demarcation with annotations 开启事务 -->
+	<tx:annotation-driven />
+	<!--启用注解-->
+	<mvc:annotation-driven />
+
+	<!-- 文件上传 -->
+	<bean id="fileUploadService" class="com.pandawork.nenu.oa.service.other.impl.FileUploadToLocalServiceImpl" />
+	<!--<bean id="fileUploadService" class="com.pandawork.nenu.oa.service.other.impl.FileUpload2ServerService" />-->
+
+	<!-- core scan object 扫描包 -->
+	<context:component-scan base-package="com.pandawork.core.common.log" />
+    <context:component-scan base-package="com.pandawork.nenu.oa.mapper"/>
+	<context:component-scan base-package="com.pandawork.nenu.oa.service" />
+	<context:component-scan base-package="com.pandawork.nenu.oa.web.controller" />
+
+	<bean id="commonCodeService" class="com.pandawork.nenu.oa.service.data.impl.CommonCodeServiceImpl" init-method="init" />
+
+	<import resource="dbConfig181.xml"/>
+	<import resource="dbConfig.xml"/>
+	<import resource="webConfig.xml"/>
+</beans>

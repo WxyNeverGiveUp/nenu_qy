@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.general.MajorMapper">
+    <select id="listBigAll" resultType="MajorDivision">
+        SELECT DISTINCT `major_division_id` AS majorDivisionCode,
+        `major_division` AS majorDivisionName
+        FROM `t_major_code`
+        WHERE `qualification` = #{qualification}
+    </select>
+
+    <select id="listMiddleByBigCode" resultType="MajorMiddleDto">
+        SELECT DISTINCT `major_class_id` AS code,
+        `major_class` AS name
+        FROM `t_major_code`
+        WHERE `major_division_id` = #{code}
+        AND `qualification` = #{qualification}
+    </select>
+
+    <select id="listSmallByMiddleCode" resultType="MajorDto">
+        SELECT DISTINCT `major_id` AS code,
+        `major_name` AS name
+        FROM `t_major_code`
+        WHERE `major_class_id` = #{code}
+        AND `qualification` = #{qualification}
+    </select>
+
+    <select id="queryByCode" resultMap="pw.MajorCode">
+        SELECT *
+        FROM `t_major_code`
+        WHERE `major_id` = #{code}
+        AND `qualification` = #{qualification}
+    </select>
+
+     <select id="listAll" resultMap="pw.MajorCode">
+        SELECT `major_id`,`major_name`
+        FROM `t_major_code`
+    </select>
+
+    <select id="queryByName" resultMap="pw.MajorCode">
+        SELECT `major_id`
+        FROM `t_major_code`
+        WHERE `major_name` = #{major}
+    </select>
+
+    <!--校级专业查询-->
+    <select id="queryMajorsByCollege" resultType="UserInfoDto">
+        SELECT DISTINCT  `major_qualification` AS majorQualification,
+        `major_code` AS majorCode
+        FROM `t_sys_user_info`,`t_sys_users_roles`
+        WHERE `college_code` =#{collegeCode}
+        AND  `t_sys_user_info`.user_id = `t_sys_users_roles`.user_id AND role_id =5
+    </select>
+
+</mapper>

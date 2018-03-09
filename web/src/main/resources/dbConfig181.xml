@@ -1,0 +1,43 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <bean id="dataSourceJyoa" parent="abstractDataSource">
+        <property name="username" value="root"/>
+        <property name="password" value="poweredge-9di"/>
+        <property name="jdbcUrl" value="jdbc:mysql://202.198.133.181:3306/db_nenu_oa?defaultFetchSize=25&amp;useLocalSessionState=true&amp;elideSetAutoCommit=true&amp;useUsageAdvisor=false&amp;useReadAheadInput=false&amp;useUnbufferedInput=false&amp;cacheServerConfiguration=true&amp;autoReconnect=true&amp;zeroDateTimeBehavior=convertToNull" />
+    </bean>
+
+	<!-- transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManagerJyoa"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceJyoa" />
+	</bean>
+
+	<!-- define the SqlSessionFactory -->
+	<bean id="sqlSessionFactoryJyoa" class="com.pandawork.core.framework.dao.mybatis.SqlSessionFactoryBean">
+		<!-- db datasource -->
+		<property name="dataSource" ref="dataSourceJyoa" />
+		<!-- 实体目录 -->
+		<property name="typeAliasesPackage" value="com.pandawork.nenu.oa.common.entity;com.pandawork.nenu.oa.common.dto" />
+
+		<property name="mapperLocations">
+			<list>
+				<!--这个要配置 例如 classpath:com/pandawork/test/mapper/**/*Mapper.xml -->
+				<value>classpath:com/pandawork/nenu/oa/jyoamapper/**/*mapper.xml
+				</value>
+			</list>
+		</property>
+		<!-- 非接口实现的配置文件 -->
+	</bean>
+
+	<bean id="sqlSessionTemplateJyoa"
+		class="com.pandawork.core.framework.dao.mybatis.dataBaseSharing.template.RWSqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactoryJyoa" />
+	</bean>
+	<!-- 通过扫描的模式，扫描目录下所有的mapper， 根据对应的mapper.xml为其生成代理类 -->
+	<bean id="jyoamapper"
+		class="com.pandawork.core.framework.dao.mybatis.dataBaseSharing.template.RWMapperScannerConfigurer">
+		<property name="basePackage" value="com.pandawork.nenu.oa.jyoamapper" />
+		<property name="sqlSessionTemplate" ref="sqlSessionTemplateJyoa"></property>
+	</bean>
+</beans>

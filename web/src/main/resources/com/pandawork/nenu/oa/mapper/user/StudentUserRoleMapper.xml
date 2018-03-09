@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.user.StudentUserRoleMapper">
+
+    <select id="listRolesByUserId" resultType="Integer">
+        SELECT `role_id`
+        FROM `t_sys_stu_users_roles`
+        WHERE `stu_user_id` = #{userId}
+    </select>
+
+    <select id="listRoles" resultType="String">
+        SELECT tsr.role AS role
+        FROM t_sys_roles tsr,
+             t_sys_stu_users tssu,
+             t_sys_stu_users_roles tssur
+        WHERE tssu.id = tssur.stu_user_id AND
+              tssur.role_id = tsr.id AND
+              tssu.stu_number = #{username}
+    </select>
+
+    <select id="listRolesByUsername" resultType="Integer">
+        SELECT tssur.`role_id`
+        FROM `t_sys_stu_users_roles` tssur,
+        `t_sys_stu_users` tssu
+        WHERE tssu.`stu_number` = #{username}
+        AND tssur.`stu_user_id` = tssu.`id`
+    </select>
+
+    <select id="listUsersRolesByStudentUserId" resultMap="pw.StudentUserRole">
+        SELECT *
+        FROM t_sys_stu_users_roles stuRole
+        WHERE stuRole.stu_user_id = #{studentUserId}
+    </select>
+</mapper>

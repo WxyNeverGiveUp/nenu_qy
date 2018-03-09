@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.dispatch.CommentsMapper">
+
+    <select id="queryByStatusId" resultMap="pw.Comments">
+        SELECT *
+        FROM `t_comments`
+        WHERE `status_info_id` = #{statusId}
+    </select>
+
+</mapper>

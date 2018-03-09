@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.dispatch.ReportCardMapper">
+
+    <select id="queryByStatusId" resultMap="pw.ReportCard">
+        SELECT *
+        FROM `t_report_card`
+        WHERE `status_info_id` = #{statusId}
+    </select>
+</mapper>

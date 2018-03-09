@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.general.QualificationMapper">
+
+    <select id="queryByCode" resultMap="pw.QualificationCode">
+        SELECT `id`, `qualification_id`, `qualification`
+        FROM `t_qualification_code`
+        WHERE `qualification_id` = #{code}
+    </select>
+
+    <select id="listAll" resultMap="pw.QualificationCode">
+        SELECT `id`, `qualification_id`, `qualification`
+        FROM `t_qualification_code`
+    </select>
+</mapper>

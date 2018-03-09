@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pandawork.nenu.oa.mapper.data.InformationStatisticMapper">
+
+    <delete id="delete" parameterType="int">
+            DELETE FROM t_information_statistic WHERE exam_id = #{examId}
+    </delete>
+
+    <update id="update" parameterType="com.pandawork.nenu.oa.common.entity.data.InformationStatistic" >
+        UPDATE t_information_statistic SET
+        name = #{name},
+        college_id = #{collegeId},
+        college_name = #{collegeName},
+        sex_id = #{sexId},
+        sex = #{sex},
+        qualification_study = #{qualificationStudy},
+        major_division = #{majorDivision},
+        major_id = #{majorId},
+        major_name = #{majorName},
+        normal_stu_id = #{normalStuId},
+        normal_stu = #{normalStu},
+        province_id = #{provinceId},
+        province = #{province},
+        difficulty_id = #{difficultyId},
+        difficulty_mode = #{difficultyMode},
+        nation_id = #{nationId},
+        nation = #{nation},
+        political_stand_id = #{politicalStandId},
+        political_stand = #{politicalStand},
+        whereaboutgo_id = #{whereaboutgoId},
+        whereaboutgo  = #{whereaboutgo},
+        place_class_id = #{placeClassId},
+        place_class = #{placeClass},
+        job_province_id = #{jobProvinceId},
+        job_province = #{jobProvince},
+        job_region = #{jobRegion},
+        ins_mode_id = #{insModeId},
+        ins_mode = #{insMode},
+        ins_field_id = #{insFieldId},
+        ins_field = #{insField},
+        wherewantgo = #{wherewantgo},
+        wherewantgo_ins = #{wherewantgoIns}
+        WHERE exam_id = #{examId}
+    </update>
+
+    <update id="updateFromNation" parameterType="com.pandawork.nenu.oa.common.entity.data.InformationStatistic" >
+        UPDATE t_information_statistic SET
+        student_id = #{studentId}
+        WHERE name = #{name} AND major_id = #{majorId}
+    </update>
+
+    <select id="studentStructure" resultType="com.pandawork.nenu.oa.common.dto.data.InformationStatisticDTO">
+        SELECT ${dimension1} AS dimension1
+        <if test="dimension2 != null and dimension2 != ''">
+            ,${dimension2} AS dimension2
+        </if>
+        , count(*) AS count
+        FROM t_information_statistic
+        WHERE
+        graduation_time >= ${start} AND ${end} >= graduation_time
+        <if test="college != null and college != ''">
+            AND college_name = #{college}
+        </if>
+        <if test="qualification != null and qualification !=''">
+            AND qualification_study = #{qualification}
+        </if>
+        GROUP BY
+        ${dimension1}
+        <if test="dimension2 != null and dimension2 != ''">
+            ,${dimension2}
+        </if>
+    </select>
+
+    <select id="employmentRate" resultType="com.pandawork.nenu.oa.common.dto.data.InformationStatisticDTO">
+        SELECT ${dimension1} AS dimension1
+        <if test="dimension2 != null and dimension2 != ''">
+            ,${dimension2} AS dimension2
+        </if>
+        , count(*) AS count
+        FROM t_information_statistic
+        WHERE
+        graduation_time >= ${start} AND ${end} >= graduation_time
+        AND whereaboutgo_id IN(10,11,12,27,46,50,51,75,76,80,85)
+        <if test="college != null and college != ''">
+            AND college_name = #{college}
+        </if>
+        <if test="qualification != null and qualification !=''">
+            AND qualification_study = #{qualification}
+        </if>
+        GROUP BY
+        ${dimension1}
+        <if test="dimension2 != null and dimension2 != ''">
+            ,${dimension2}
+        </if>
+    </select>
+
+    <select id="planEmploymentRate" resultType="com.pandawork.nenu.oa.common.dto.data.InformationStatisticDTO">
+        SELECT ${dimension1} AS dimension1
+        <if test="dimension2 != null and dimension2 != ''">
+            ,${dimension2} AS dimension2
+        </if>
+        , count(*) AS count
+        FROM t_information_statistic
+        WHERE
+        graduation_time >= ${start} AND ${end} >= graduation_time
+        AND (whereaboutgo_id IN(10,11,12,27,46,50,51,75,76,80,85) OR wherewantgo IN ( '工作' , '出国' , '升学') )
+        <if test="college != null and college != ''">
+            AND college_name = #{college}
+        </if>
+        <if test="qualification != null and qualification !=''">
+            AND qualification_study = #{qualification}
+        </if>
+        GROUP BY
+        ${dimension1}
+        <if test="dimension2 != null and dimension2 != ''">
+            ,${dimension2}
+        </if>
+    </select>
+
+    <select id="employStructure" resultType="com.pandawork.nenu.oa.common.dto.data.InformationStatisticDTO">
+        SELECT ${dimension1} AS dimension1
+        <if test="dimension2 != null and dimension2 != ''">
+            ,${dimension2} AS dimension2
+        </if>
+        , count(*) AS count
+        FROM t_information_statistic
+        WHERE
+        graduation_time >= ${start} AND ${end} >= graduation_time
+        AND whereaboutgo_id IN(10,11,12,27,46,50,51,75,76,80,85)
+        <if test="college != null and college != ''">
+            AND college_name = #{college}
+        </if>
+        <if test="qualification != null and qualification !=''">
+            AND qualification_study = #{qualification}
+        </if>
+        GROUP BY
+        ${dimension1}
+        <if test="dimension2 != null and dimension2 != ''">
+            ,${dimension2}
+        </if>
+    </select>
+</mapper>

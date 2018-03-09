@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pandawork.nenu.oa.mapper.api.MajorTypeMapper">
+
+
+    <select id="listQualification" resultMap="pw.MajorCode">
+        SELECT DISTINCT `qualification` AS qualification
+        FROM t_major_code
+    </select>
+
+    <select id="listMajorDivisionByQualification" resultMap="pw.MajorCode">
+        SELECT DISTINCT  `major_division` AS majorDivision, `major_division_id` AS majorDivisionId
+        FROM t_major_code WHERE `qualification`=#{qualification}
+    </select>
+
+    <select id="listMajorClassByMajorDivision" resultMap="pw.MajorCode">
+        SELECT DISTINCT  `major_class` AS majorClass,`major_class_id` AS  majorClassId
+        FROM t_major_code WHERE `major_division`=#{majorDivision}
+    </select>
+
+    <!--根据中类和专业层次查出专业-->
+    <select id="listMajorsByCondition" resultType="String">
+        SELECT major_id AS majorCode
+        FROM t_major_code
+        <where>
+            <include refid="queryCondition"/>
+        </where>
+    </select>
+
+    <sql id="queryCondition">
+        <if test="qualification != null and qualification != '' ">
+            AND `qualification` =#{qualification}
+        </if>
+
+        <if test="majorClass != null and majorClass != '' ">
+            AND `major_class` =#{majorClass}
+        </if>
+    </sql>
+
+</mapper>

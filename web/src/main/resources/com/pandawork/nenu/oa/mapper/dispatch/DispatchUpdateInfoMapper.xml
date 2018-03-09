@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pandawork.nenu.oa.mapper.dispatch.DispatchUpdateInfoMapper">
+
+    <select id="listLatestByDispatchInfoId" resultMap="pw.DispatchUpdateInfo">
+        SELECT `id`, `dispatch_info_id`, `before_update`, `after_update`, `update_type`, `created_time`, `last_modified_time`
+        FROM (SELECT * FROM `t_dispatch_update_info` ORDER  BY `id` DESC) AS T
+        WHERE `dispatch_info_id` = #{dispatchInfoId}
+        <!--<if test="isStudent ==1">-->
+            <!--AND `alter_by_who` = 0-->
+        <!--</if>-->
+        GROUP BY T.`update_type`
+    </select>
+
+    <select id="listByDispatchInfoId" resultMap="pw.DispatchUpdateInfo">
+        SELECT `id`, `dispatch_info_id`, `before_update`, `after_update`, `update_type`, `created_time`, `last_modified_time`
+        FROM `t_dispatch_update_info`
+        WHERE `dispatch_info_id` = #{dispatchInfoId}
+    </select>
+
+    <select id="listByDispatchInfoIdAndType" resultMap="pw.DispatchUpdateInfo">
+        SELECT `id`, `dispatch_info_id`, `before_update`, `after_update`, `update_type`, `created_time`, `last_modified_time`
+        FROM `t_dispatch_update_info`
+        WHERE `dispatch_info_id` = #{dispatchInfoId}
+        AND `update_type` = #{type}
+    </select>
+</mapper>

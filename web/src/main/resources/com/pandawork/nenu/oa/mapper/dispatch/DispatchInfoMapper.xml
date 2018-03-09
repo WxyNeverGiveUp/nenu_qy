@@ -1,0 +1,987 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pandawork.nenu.oa.mapper.dispatch.DispatchInfoMapper">
+
+    <resultMap id="getdetail" type="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+               extends="pw.DispatchInfo">
+        <result column="whereaboutgo" property="whereaboutgo"/>
+        <result column="report_mode" property="reportMode"/>
+        <result column="trade_name" property="tradeName"/>
+        <result column="job" property="job"/>
+        <result column="reportAddressName" property="reportAddressName"/>
+        <result column="fileCompanyAddressName" property="fileCompanyAddressName"/>
+        <result column="property_name" property="propertyName"/>
+        <result column="stuName" property="name"/>
+    </resultMap>
+    <resultMap id="dispatchList" type="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+               extends="pw.DispatchInfo">
+        <result column="name" property="name"/>
+        <result column="studentNumber" property="studentNumber"/>
+        <result column="id_number" property="idNumber"/>
+        <result column="candidate_number" property="candidateNumber"/>
+    </resultMap>
+    <sql id="listQueryCondition">
+        <if test="majorId != null and majorId > 0">
+            AND t_stu_status_information.major_code = #{majorId}
+        </if>
+        <if test="stuType!=null and stuType>0">
+            AND t_stu_status_information.stu_type = #{stuType}
+        </if>
+        <if test="provinceId != null and provinceId > 0">
+            AND t_stu_status_information.origin_place_code LIKE CONCAT(#{provinceId},"%")
+        </if>
+        <if test="provinceInId != null and provinceInId > 0">
+            AND t_dispatch_info.city_id LIKE CONCAT(#{provinceInId},"%")
+        </if>
+        <if test="trainingModeCode != null and trainingModeCode > 0">
+            AND t_stu_status_information.training_mode_code=#{trainingModeCode}
+        </if>
+        <if test="normalStuId != null and normalStuId > 0">
+            AND t_stu_status_information.normal_stu_code=#{normalStuId}
+        </if>
+        <if test="counsellorCheckResult != null and counsellorCheckResult > 0">
+            AND t_dispatch_info.counsellor_check_result=#{counsellorCheckResult}
+        </if>
+        <if test="whereaboutgoId != null and whereaboutgoId > 0">
+            AND t_dispatch_info.whereaboutgo_id=#{whereaboutgoId}
+        </if>
+        <if test="deputySecretaryCheckResult != null and deputySecretaryCheckResult > 0">
+            AND t_dispatch_info.deputy_secretary_check_result=#{deputySecretaryCheckResult}
+        </if>
+        <if test="schoolCheckResult != null and schoolCheckResult > 0">
+            AND t_dispatch_info.school_check_result=#{schoolCheckResult}
+        </if>
+        <if test="qualificationId != null and qualificationId !='-1'">
+            AND t_stu_status_information.qualification_code=#{qualificationId}
+        </if>
+        <if test="keyWord != null and keyWord.length() > 0 and keyWord !='' ">
+            AND ( t_stu_status_information.student_number LIKE CONCAT("%",#{keyWord},"%") OR
+            t_stu_status_information.`name` LIKE CONCAT("%",#{keyWord},"%") OR
+            t_stu_status_information.id_number LIKE CONCAT("%",#{keyWord},"%") OR
+            t_stu_status_information.candidate_number LIKE CONCAT("%",#{keyWord},"%"))
+        </if>
+        <if test="nation != null and nation != '-1'">
+            AND t_stu_status_information.`nation_code` = #{nation}
+        </if>
+        <if test="sex != null and sex > 0">
+            AND t_stu_status_information.sex =#{sex}
+        </if>
+        <if test="politicalStand > 0">
+            AND t_stu_status_information.`political_stand_code` =#{politicalStand}
+        </if>
+        <if test="reportModeId > 0 ">
+            AND t_dispatch_info.`report_mode_id` =#{reportModeId}
+        </if>
+
+    </sql>
+    <sql id="limit_order">
+        GROUP BY t_dispatch_info.stu_status_info_id  ORDER  BY t_dispatch_info.id DESC
+        limit #{pCurrent},#{pSize}
+    </sql>
+    <sql id="listColumn">
+        t_stu_status_information.`name` AS `name`,
+        t_stu_status_information.student_number AS studentNumber,
+        t_stu_status_information.id_number AS idNumber,
+        t_stu_status_information.candidate_number AS candidateNumber,
+        t_dispatch_info.company_name,
+        t_dispatch_info.full_address,
+        t_dispatch_info.counsellor_check_result,
+        t_dispatch_info.counsellor_check_time,
+        t_dispatch_info.deputy_secretary_check_result,
+        t_dispatch_info.deputy_secretary_check_time,
+        t_dispatch_info.school_check_result,
+        t_dispatch_info.school_check_time,
+        t_qualification_code.qualification_id,
+        t_normal_code.normal_stu_id,
+        t_dispatch_info.stu_status_info_id,
+        t_sys_user_info.user_id userId,
+        t_major_code.major_id majorId
+    </sql>
+    <sql id="listColumn1">
+        t_stu_status_information.`name` AS `name`,
+        t_stu_status_information.student_number AS studentNumber,
+        t_stu_status_information.id_number AS idNumber,
+        t_stu_status_information.sex AS sex,
+        t_stu_status_information.candidate_number AS candidateNumber,
+        t_stu_status_information.stu_length AS stuLength,
+        t_dispatch_info.id AS dispatchId,
+        t_dispatch_info.company_name AS companyName,
+        t_dispatch_info.full_address AS fullAddress,
+        (SELECT t_report_code.`report_mode` FROM `t_report_code` WHERE t_dispatch_info.`report_mode_id` = t_report_code.`report_mode_id`) AS reportMode,
+        (SELECT `show_name` FROM `t_place_code` tpc WHERE tpc.`place_id` = t_dispatch_info.city_id) AS cityName,
+        t_dispatch_info.report_company AS reportCompany,
+        (SELECT `show_name` FROM `t_place_code` tpc WHERE tpc.`place_id` = t_dispatch_info.report_company_address) AS reportAddressName,
+        t_dispatch_info.counsellor_check_result,
+        t_dispatch_info.counsellor_check_time,
+        t_dispatch_info.deputy_secretary_check_result,
+        t_dispatch_info.deputy_secretary_check_time,
+        t_dispatch_info.school_check_result,
+        t_dispatch_info.school_check_time,
+        t_dispatch_info.id,
+        t_dispatch_info.stu_status_info_id
+    </sql>
+    <!--获取用户的角色类型-->
+    <select id="getUserRole" parameterType="int" resultType="string">
+        SELECT
+        t_sys_roles.role
+        FROM
+        t_sys_users_roles,
+        t_sys_users,
+        t_sys_roles
+        <where>
+            t_sys_users_roles.user_id = t_sys_users.id
+            AND t_sys_users_roles.role_id = t_sys_roles.id
+            AND t_sys_users.id = #{userId}
+        </where>
+    </select>
+    <!--带条件查询辅导员级别的用户对应的派遣信息主键列表-->
+    <select id="getCounsellorIdList" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+            resultType="int">
+        SELECT
+        t_stu_status_information.id id
+        FROM
+        t_stu_status_information
+        LEFT JOIN t_dispatch_info ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+        LEFT JOIN t_major_code ON t_stu_status_information.major_code = t_major_code.major_id
+        LEFT JOIN t_college_code ON t_stu_status_information.college_code = t_college_code.college_id
+        LEFT JOIN t_sys_user_info ON t_sys_user_info.major_code = t_major_code.major_id
+        LEFT JOIN t_qualification_code ON t_qualification_code.qualification_id =
+        t_stu_status_information.qualification_code
+        LEFT JOIN t_normal_code ON t_stu_status_information.normal_stu_code = t_normal_code.normal_stu_id
+        LEFT JOIN t_training_mode_code ON t_stu_status_information.training_mode_code =
+        t_training_mode_code.training_mode_id
+        LEFT JOIN t_political_code ON t_stu_status_information.political_stand_code = t_political_code.political_stand_id
+        LEFT JOIN t_report_code ON t_dispatch_info.report_mode_id = t_report_code.report_mode_id
+        LEFT JOIN t_param_province pp1 ON t_stu_status_information.origin_place_code LIKE
+        CONCAT(pp1.`code`,"____")
+        LEFT JOIN t_param_province pp2 ON t_dispatch_info.city_id LIKE CONCAT(pp2.`code`,"____")
+        <where>
+            <if test="userId!=null">
+                t_sys_user_info.user_id=#{userId} AND t_dispatch_info.current_agreement = 1
+                <!--<if test="showUncommitted != 1">-->
+                    <!--AND t_dispatch_info.check_status &gt; 1-->
+                <!--</if>-->
+                <if test="depsOrMajors!=null and depsOrMajors>0">
+                    AND t_stu_status_information.college_code=#{depsOrMajors}
+                </if>
+                AND t_dispatch_info.is_deleted = 2
+                <include refid="listQueryCondition"/>
+            </if>
+        </where>
+        <include refid="limit_order"/>
+    </select>
+    <!--获取辅导员级别的用户对应的派遣信息列表-->
+    <select id="getCounsellorCount" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+            resultType="int">
+        SELECT count(tmp.id) FROM
+        (SELECT
+--         t_stu_status_information.id id
+        t_dispatch_info.id id
+        FROM
+        t_dispatch_info
+--         t_stu_status_information
+        LEFT JOIN t_stu_status_information ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+--         LEFT JOIN t_dispatch_info ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+        LEFT JOIN t_college_code ON t_stu_status_information.college_code = t_college_code.college_id
+        LEFT JOIN t_major_code ON t_stu_status_information.major_code = t_major_code.major_id
+        LEFT JOIN t_sys_user_info ON t_sys_user_info.major_code = t_major_code.major_id
+--         LEFT JOIN t_qualification_code ON t_qualification_code.qualification_id =
+--         t_stu_status_information.qualification_code
+--         LEFT JOIN t_normal_code ON t_stu_status_information.normal_stu_code = t_normal_code.normal_stu_id
+--         LEFT JOIN t_training_mode_code ON t_stu_status_information.training_mode_code =
+--         t_training_mode_code.training_mode_id
+--         LEFT JOIN t_political_code ON t_stu_status_information.political_stand_code = t_political_code.political_stand_id
+--         LEFT JOIN t_report_code ON t_dispatch_info.report_mode_id = t_report_code.report_mode_id
+--         LEFT JOIN t_param_province pp1 ON t_stu_status_information.origin_place_code LIKE
+--         CONCAT(pp1.`code`,"____")
+--         LEFT JOIN t_param_province pp2 ON t_dispatch_info.city_id LIKE CONCAT(pp2.`code`,"____")
+        <where>
+            <if test="userId!=null">
+                t_sys_user_info.user_id=#{userId} AND t_dispatch_info.current_agreement = 1
+                <!--<if test="showUncommitted != 1">-->
+                    <!--AND t_dispatch_info.check_status &gt; 1-->
+                <!--</if>-->
+                <if test="depsOrMajors!=null and depsOrMajors>0">
+                    AND t_stu_status_information.college_code=#{depsOrMajors}
+                </if>
+                AND t_dispatch_info.is_deleted = 2
+                <include refid="listQueryCondition"/>
+            </if>
+        </where>
+        ) tmp
+    </select>
+    <!--带条件查询辅导员级别的用户对应的派遣信息列表-->
+    <select id="queryCounsellorTypeList" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+            resultMap="dispatchList">
+        SELECT
+        <include refid="listColumn1"/>
+        FROM
+        t_stu_status_information
+        LEFT JOIN t_dispatch_info ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+        LEFT JOIN t_college_code ON t_stu_status_information.college_code = t_college_code.college_id
+        LEFT JOIN t_major_code ON t_stu_status_information.major_code = t_major_code.major_id
+        LEFT JOIN t_sys_user_info ON t_sys_user_info.major_code = t_major_code.major_id
+        LEFT JOIN t_qualification_code ON t_qualification_code.qualification_id =
+        t_stu_status_information.qualification_code
+        LEFT JOIN t_normal_code ON t_stu_status_information.normal_stu_code = t_normal_code.normal_stu_id
+        LEFT JOIN t_training_mode_code ON t_stu_status_information.training_mode_code =
+        t_training_mode_code.training_mode_id
+        LEFT JOIN t_political_code ON t_stu_status_information.political_stand_code = t_political_code.political_stand_id
+        LEFT JOIN t_report_code ON t_dispatch_info.report_mode_id = t_report_code.report_mode_id
+        LEFT JOIN t_param_province pp1 ON t_stu_status_information.origin_place_code LIKE
+        CONCAT(pp1.`code`,"____")
+        LEFT JOIN t_param_province pp2 ON t_dispatch_info.city_id LIKE CONCAT(pp2.`code`,"____")
+        <where>
+            <if test="userId!=null">
+                t_sys_user_info.user_id=#{userId} AND t_dispatch_info.current_agreement = 1
+                <!--<if test="showUncommitted != 1">-->
+                    <!--AND t_dispatch_info.check_status &gt; 1-->
+                <!--</if>-->
+                <if test="depsOrMajors!=null and depsOrMajors>0">
+                    AND t_stu_status_information.college_code=#{depsOrMajors}
+                </if>
+                AND t_dispatch_info.is_deleted = 2
+                <include refid="listQueryCondition"/>
+            </if>
+        </where>
+        <include refid="limit_order"/>
+    </select>
+    <!--带条件查询学院级别的用户对应的派遣信息列表-->
+    <select id="getDepartmentCount" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+            resultType="int">
+        SELECT count(tmp.id) FROM
+        (SELECT
+        t_dispatch_info.id id
+        FROM
+        t_dispatch_info
+        LEFT JOIN t_stu_status_information ON  t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+--         LEFT JOIN t_dispatch_info ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+        LEFT JOIN t_college_code ON t_stu_status_information.college_code = t_college_code.college_id
+        LEFT JOIN t_sys_user_info ON t_sys_user_info.college_code = t_college_code.college_id
+--         LEFT JOIN t_qualification_code ON t_qualification_code.qualification_id =
+--         t_stu_status_information.qualification_code
+--         LEFT JOIN t_major_code ON t_stu_status_information.major_code = t_major_code.major_id
+--         LEFT JOIN t_normal_code ON t_stu_status_information.normal_stu_code = t_normal_code.normal_stu_id
+--         LEFT JOIN t_training_mode_code ON t_stu_status_information.training_mode_code =
+--         t_training_mode_code.training_mode_id
+--         LEFT JOIN t_political_code ON t_stu_status_information.political_stand_code = t_political_code.political_stand_id
+--         LEFT JOIN t_report_code ON t_dispatch_info.report_mode_id = t_report_code.report_mode_id
+--         LEFT JOIN t_param_province pp1 ON t_stu_status_information.origin_place_code LIKE
+--         CONCAT(pp1.`code`,"____")
+--         LEFT JOIN t_param_province pp2 ON t_dispatch_info.city_id LIKE CONCAT(pp2.`code`,"____")
+        <where>
+            <if test="userId!=null">
+                t_sys_user_info.user_id=#{userId} AND t_dispatch_info.current_agreement = 1
+                <!--<if test="showUncommitted != 1">-->
+                    <!--AND t_dispatch_info.check_status &gt; 1-->
+                <!--</if>-->
+                <if test="depsOrMajors!=null and depsOrMajors>0">
+                    AND t_stu_status_information.college_code=#{depsOrMajors}
+                </if>
+                AND t_dispatch_info.is_deleted = 2
+                <include refid="listQueryCondition"/>
+            </if>
+        </where>
+        ) tmp
+    </select>
+    <!--获取学院级别的用户对应的派遣信息主键列表-->
+    <select id="getDepartmentIdList" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+            resultType="int">
+        SELECT
+        t_stu_status_information.id id
+        FROM
+        t_stu_status_information
+        LEFT JOIN t_dispatch_info ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+        LEFT JOIN t_college_code ON t_stu_status_information.college_code = t_college_code.college_id
+        LEFT JOIN t_sys_user_info ON t_sys_user_info.college_code = t_college_code.college_id
+--         LEFT JOIN t_qualification_code ON t_qualification_code.qualification_id =
+--         t_stu_status_information.qualification_code
+--         LEFT JOIN t_normal_code ON t_stu_status_information.normal_stu_code = t_normal_code.normal_stu_id
+--         LEFT JOIN t_training_mode_code ON t_stu_status_information.training_mode_code =
+--         t_training_mode_code.training_mode_id
+--         LEFT JOIN t_political_code ON t_stu_status_information.political_stand_code = t_political_code.political_stand_id
+--         LEFT JOIN t_report_code ON t_dispatch_info.report_mode_id = t_report_code.report_mode_id
+--         LEFT JOIN t_param_province pp1 ON t_stu_status_information.origin_place_code LIKE
+--         CONCAT(pp1.`code`,"____")
+--         LEFT JOIN t_param_province pp2 ON t_dispatch_info.city_id LIKE CONCAT(pp2.`code`,"____")
+        <where>
+            <if test="userId!=null">
+                t_sys_user_info.user_id=#{userId} AND t_dispatch_info.current_agreement = 1
+                <!--<if test="showUncommitted != 1">-->
+                    <!--AND t_dispatch_info.check_status &gt; 1-->
+                <!--</if>-->
+                <if test="depsOrMajors!=null and depsOrMajors>0">
+                    AND t_stu_status_information.college_code=#{depsOrMajors}
+                </if>
+                AND t_dispatch_info.is_deleted = 2
+                <include refid="listQueryCondition"/>
+            </if>
+        </where>
+        <include refid="limit_order"/>
+    </select>
+    <!--带条件查询学院级别的用户对应的派遣信息列表-->
+    <select id="queryDepartmentTypeList" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+            resultMap="dispatchList">
+        SELECT
+        <include refid="listColumn1"/>
+        FROM
+        t_stu_status_information
+        LEFT JOIN t_dispatch_info ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+        LEFT JOIN t_college_code ON t_stu_status_information.college_code = t_college_code.college_id
+        LEFT JOIN t_sys_user_info ON t_sys_user_info.college_code = t_college_code.college_id
+--         LEFT JOIN t_qualification_code ON t_qualification_code.qualification_id =
+--         t_stu_status_information.qualification_code
+--         LEFT JOIN t_major_code ON t_stu_status_information.major_code = t_major_code.major_id
+--         LEFT JOIN t_normal_code ON t_stu_status_information.normal_stu_code = t_normal_code.normal_stu_id
+--         LEFT JOIN t_training_mode_code ON t_stu_status_information.training_mode_code =
+--         t_training_mode_code.training_mode_id
+--         LEFT JOIN t_political_code ON t_stu_status_information.political_stand_code = t_political_code.political_stand_id
+--         LEFT JOIN t_report_code ON t_dispatch_info.report_mode_id = t_report_code.report_mode_id
+--         LEFT JOIN t_param_province pp1 ON t_stu_status_information.origin_place_code LIKE
+--         CONCAT(pp1.`code`,"____")
+--         LEFT JOIN t_param_province pp2 ON t_dispatch_info.city_id LIKE CONCAT(pp2.`code`,"____")
+        <where>
+            <if test="userId!=null">
+                t_sys_user_info.user_id=#{userId} AND t_dispatch_info.current_agreement = 1
+                <!--<if test="showUncommitted != 1">-->
+                    <!--AND t_dispatch_info.check_status &gt; 1-->
+                <!--</if>-->
+                <if test="depsOrMajors!=null and depsOrMajors>0">
+                    AND t_stu_status_information.college_code=#{depsOrMajors}
+                </if>
+                AND t_dispatch_info.is_deleted = 2
+                <include refid="listQueryCondition"/>
+            </if>
+        </where>
+        <include refid="limit_order"/>
+    </select>
+    <!--带条件查询学校级别的用户对应的派遣信息列表-->
+    <select id="getSchoolCount" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+            resultType="int">
+        SELECT count(tmp.id) FROM
+        (SELECT
+--         t_stu_status_information.id id
+        t_dispatch_info.id id
+        FROM
+--         t_stu_status_information
+        t_dispatch_info
+--         LEFT JOIN t_dispatch_info ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+        LEFT JOIN t_stu_status_information ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+--         LEFT JOIN t_college_code ON t_stu_status_information.college_code = t_college_code.college_id
+--         LEFT JOIN t_qualification_code ON t_qualification_code.qualification_id
+--         =t_stu_status_information.qualification_code
+--         LEFT JOIN t_major_code ON t_stu_status_information.major_code = t_major_code.major_id
+--         LEFT JOIN t_normal_code ON t_stu_status_information.normal_stu_code = t_normal_code.normal_stu_id
+--         LEFT JOIN t_training_mode_code ON t_stu_status_information.training_mode_code
+--         =t_training_mode_code.training_mode_id
+--         LEFT JOIN t_political_code ON t_stu_status_information.political_stand_code = t_political_code.political_stand_id
+--         LEFT JOIN t_report_code ON t_dispatch_info.report_mode_id = t_report_code.report_mode_id
+--         LEFT JOIN t_param_province pp1 ON t_stu_status_information.origin_place_code LIKE
+--         CONCAT(pp1.`code`,"____")
+--         LEFT JOIN t_param_province pp2 ON t_dispatch_info.city_id LIKE CONCAT(pp2.`code`,"____")
+        <where>
+            t_dispatch_info.current_agreement=1
+            <!--<if test="showUncommitted != 1">-->
+                <!--AND t_dispatch_info.check_status &gt; 1-->
+            <!--</if>-->
+            <if test="depsOrMajors!=null and depsOrMajors>0">
+                AND t_stu_status_information.college_code=#{depsOrMajors}
+            </if>
+            AND t_dispatch_info.is_deleted = 2
+            <include refid="listQueryCondition"/>
+        </where>
+        ) tmp
+    </select>
+    <!--获取学校级别的用户对应的派遣信息主键列表-->
+    <select id="getSchoolIdList" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+            resultType="int">
+        SELECT
+        t_stu_status_information.id id
+        FROM
+        t_stu_status_information
+        LEFT JOIN t_dispatch_info ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+--         LEFT JOIN t_college_code ON t_stu_status_information.college_code = t_college_code.college_id
+--         LEFT JOIN t_qualification_code ON t_qualification_code.qualification_id
+--         =t_stu_status_information.qualification_code
+--         LEFT JOIN t_normal_code ON t_stu_status_information.normal_stu_code = t_normal_code.normal_stu_id
+--         LEFT JOIN t_training_mode_code ON t_stu_status_information.training_mode_code
+--         =t_training_mode_code.training_mode_id
+--         LEFT JOIN t_political_code ON t_stu_status_information.political_stand_code = t_political_code.political_stand_id
+--         LEFT JOIN t_report_code ON t_dispatch_info.report_mode_id = t_report_code.report_mode_id
+--         LEFT JOIN t_param_province pp1 ON t_stu_status_information.origin_place_code LIKE
+--         CONCAT(pp1.`code`,"____")
+--         LEFT JOIN t_param_province pp2 ON t_dispatch_info.city_id LIKE CONCAT(pp2.`code`,"____")
+        <where>
+            t_dispatch_info.current_agreement=1
+            <!--<if test="showUncommitted != 1">-->
+                <!--AND t_dispatch_info.check_status &gt; 1-->
+            <!--</if>-->
+            <if test="depsOrMajors!=null and depsOrMajors>0">
+                and t_stu_status_information.college_code=#{depsOrMajors}
+            </if>
+            AND t_dispatch_info.is_deleted = 2
+            <include refid="listQueryCondition"/>
+        </where>
+        <include refid="limit_order"/>
+    </select>
+    <!--带条件查询学校类别的管理员对应的派遣信息列表-->
+    <select id="querySchoolTypeList" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto"
+            resultMap="dispatchList">
+        SELECT
+        <include refid="listColumn1"/>
+        FROM
+        t_stu_status_information
+        LEFT JOIN t_dispatch_info ON t_dispatch_info.stu_status_info_id = t_stu_status_information.id
+--         LEFT JOIN t_college_code ON t_stu_status_information.college_code = t_college_code.college_id
+--         LEFT JOIN t_qualification_code ON t_qualification_code.qualification_id
+--         =t_stu_status_information.qualification_code
+--         LEFT JOIN t_major_code ON t_stu_status_information.major_code = t_major_code.major_id
+--         LEFT JOIN t_normal_code ON t_stu_status_information.normal_stu_code = t_normal_code.normal_stu_id
+--         LEFT JOIN t_training_mode_code ON t_stu_status_information.training_mode_code
+--         =t_training_mode_code.training_mode_id
+--         LEFT JOIN t_political_code ON t_stu_status_information.political_stand_code = t_political_code.political_stand_id
+--         LEFT JOIN t_report_code ON t_dispatch_info.report_mode_id = t_report_code.report_mode_id
+--         LEFT JOIN t_param_province pp1 ON t_stu_status_information.origin_place_code LIKE
+--         CONCAT(pp1.`code`,"____")
+--         LEFT JOIN t_param_province pp2 ON t_dispatch_info.city_id LIKE CONCAT(pp2.`code`,"____")
+        <where>
+            t_dispatch_info.current_agreement=1
+            <!--<if test="showUncommitted != 1">-->
+                <!--AND t_dispatch_info.check_status &gt; 1-->
+            <!--</if>-->
+            <if test="depsOrMajors!=null and depsOrMajors>0">
+                AND t_stu_status_information.college_code=#{depsOrMajors}
+            </if>
+            AND t_dispatch_info.is_deleted = 2
+            <include refid="listQueryCondition"/>
+        </where>
+        <include refid="limit_order"/>
+    </select>
+    <!--获取派遣信息详情-->
+    <select id="getDetail" parameterType="int"
+            resultMap="getdetail">
+        SELECT
+        t_stu_status_information.`name` AS stuName,
+        t_dispatch_info.id,
+        t_dispatch_info.report_company_address,
+        t_dispatch_info.stu_status_info_id,
+        t_dispatch_info.exam_number,
+        t_dispatch_info.agreement_number,
+        t_dispatch_info.current_agreement,
+        t_dispatch_info.company_name,
+        t_dispatch_info.organization_code,
+        t_dispatch_info.property_id,
+        t_dispatch_info.subordinate_department,
+        t_dispatch_info.full_address,
+        t_dispatch_info.company_postcode,
+        t_dispatch_info.company_contact_person,
+        t_dispatch_info.contact_person_fax,
+        t_dispatch_info.contact_person_tele,
+        t_dispatch_info.contact_person_mobile,
+        t_dispatch_info.contact_person_email,
+        t_dispatch_info.report_mode_id,
+        t_dispatch_info.report_company,
+        t_dispatch_info.accept_file,
+        t_dispatch_info.file_company_postcode,
+        t_dispatch_info.file_company,
+        t_dispatch_info.file_company_address,
+        t_dispatch_info.accept_file_department,
+        t_dispatch_info.accept_file_person,
+        t_dispatch_info.accept_file_tele,
+        t_dispatch_info.accept_hukou,
+        t_dispatch_info.material_id,
+        t_dispatch_info.check_status,
+        t_dispatch_info.counsellor_check_result,
+        t_dispatch_info.counsellor_check_reason,
+        t_dispatch_info.counsellor_check_operator,
+        t_dispatch_info.counsellor_check_time,
+        t_dispatch_info.deputy_secretary_check_result,
+        t_dispatch_info.deputy_secretary_check_reason,
+        t_dispatch_info.deputy_secretary_check_operator,
+        t_dispatch_info.deputy_secretary_check_time,
+        t_dispatch_info.school_check_result,
+        t_dispatch_info.school_check_reason,
+        t_dispatch_info.school_check_operator,
+        t_dispatch_info.school_check_time,
+        t_dispatch_info.hukou_transfer_address,
+        t_dispatch_info.created_time,
+        t_dispatch_info.last_modified_time,
+        t_report_code.report_mode,
+        t_company_trade.trade_name,
+        t_job_code.job,
+        t_whereaboutgo_code.whereaboutgo,
+        t_company_property.property_name,
+        pc3.show_name AS cityName,
+        pc1.show_name AS reportAddressName,
+        pc2.show_name AS fileCompanyAddressName,
+        t_dispatch_info.whereaboutgo_id,
+        t_dispatch_info.city_id,
+        t_dispatch_info.trade_id,
+        t_dispatch_info.job_id,
+        t_dispatch_info.stu_remark
+        FROM
+        t_stu_status_information
+        LEFT JOIN t_dispatch_info ON t_stu_status_information.id=t_dispatch_info.stu_status_info_id
+        LEFT JOIN t_report_code ON t_report_code.report_mode_id = t_dispatch_info.report_mode_id
+        LEFT JOIN t_company_trade ON t_company_trade.trade_id = t_dispatch_info.trade_id
+        LEFT JOIN t_job_code ON t_job_code.job_id = t_dispatch_info.job_id
+        LEFT JOIN t_whereaboutgo_code ON t_whereaboutgo_code.whereaboutgo_id = t_dispatch_info.whereaboutgo_id
+        LEFT JOIN t_company_property ON t_company_property.property_code = t_dispatch_info.property_id
+        LEFT JOIN t_place_code pc1 ON pc1.place_id = t_dispatch_info.report_company_address
+        LEFT JOIN t_place_code pc2 ON pc2.place_id = t_dispatch_info.file_company_address
+        LEFT JOIN t_place_code pc3 ON pc3.place_id = t_dispatch_info.city_id
+        <where>
+            t_dispatch_info.id=#{id} AND t_dispatch_info.is_deleted = 2
+        </where>
+    </select>
+
+    <!--返回校级管理员时的所有学院-->
+    <select id="getAllDepartments" resultType="com.pandawork.nenu.oa.common.dto.dispatch.EnumDto">
+        SELECT
+        DISTINCT t_college_code.college_id o1, t_college_code.college o2
+        FROM
+        t_sys_user_info
+        LEFT JOIN t_college_code ON t_college_code.college_id = t_sys_user_info.college_code
+        <where>
+            <if test="userId !=null">
+                t_sys_user_info.user_id=#{userId}
+            </if>
+        </where>
+    </select>
+    <!--获取院级管理员对应的所有专业-->
+    <select id="getAllMajors" parameterType="int" resultType="com.pandawork.nenu.oa.common.dto.dispatch.EnumDto">
+      SELECT
+        t_major_code.major_id o1 ,
+        t_major_code.major_name o2
+        FROM
+        t_sys_user_info
+        LEFT JOIN t_major_code ON t_major_code.major_id = t_sys_user_info.major_code
+        WHERE
+        t_sys_user_info.user_id =#{userId}
+    </select>
+    <select id="getIdByStuId" parameterType="int" resultType="int">
+     SELECT
+        t_dispatch_info.id
+     FROM
+        t_dispatch_info
+    WHERE
+        stu_status_info_id=#{stuId}
+        AND  t_dispatch_info.current_agreement =1
+--         AND t_dispatch_info.is_deleted = 2
+        ORDER BY id LIMIT 1
+    </select>
+    <select id="getStatusInfoIdById" parameterType="int" resultType="int">
+     SELECT
+        t_dispatch_info.stu_status_info_id
+     FROM
+        t_dispatch_info
+    WHERE
+        id=#{id}
+    </select>
+
+    <select id="countMinorityByCondition" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `t_dispatch_info` tdi
+        LEFT JOIN `t_stu_status_information` tssi ON tdi.`stu_status_info_id` = tssi.`id`
+        <where>
+            <include refid="queryMinorityCondition"/>
+        </where>
+    </select>
+
+    <select id="listMinorityByCondition" resultType="DispatchListDto">
+        SELECT tdi.`id` AS id,
+        tdi.`stu_status_info_id` AS statusInfoId,
+        tssi.`name` AS name,
+        tssi.`student_number` AS stuNumber,
+        tdi.`company_name` AS companyName,
+        tdi.`full_address` AS fullAddress,
+        (SELECT CASE WHEN tdi.`counsellor_check_result` = 1 THEN "未审核" WHEN tdi.`counsellor_check_result` = 2 THEN "审核通过"
+        WHEN tdi.`counsellor_check_result` = 3 THEN "待修改" WHEN tdi.`counsellor_check_result` = 4 THEN "已修改" END) AS counsellorCheckResult,
+        tdi.`counsellor_check_time` AS counsellorCheckTime,
+        (SELECT CASE WHEN tdi.`deputy_secretary_check_result` = 1 THEN "未审核" WHEN tdi.`deputy_secretary_check_result` = 2 THEN "审核通过"
+        WHEN tdi.`deputy_secretary_check_result` = 3 THEN "待修改" WHEN tdi.`deputy_secretary_check_result` = 4 THEN "已修改" END) AS deputySecretaryCheckResult,
+        tdi.`deputy_secretary_check_time` AS deputySecretaryCheckTime,
+        (SELECT CASE WHEN tdi.`school_check_result` = 1 THEN "未审核" WHEN tdi.`school_check_result` = 2 THEN "审核通过"
+        WHEN tdi.`school_check_result` = 3 THEN "待修改" WHEN tdi.`school_check_result` = 4 THEN "已修改" END) AS schoolCheckResult,
+        tdi.`school_check_time` AS schoolCheckTime
+        FROM `t_dispatch_info` tdi
+        LEFT JOIN `t_stu_status_information` tssi ON tdi.`stu_status_info_id` = tssi.`id`
+        <where>
+            <include refid="queryMinorityCondition"/>
+            AND t_dispatch_info.is_deleted = 2
+        </where>
+        ORDER BY tdi.`id` DESC
+        LIMIT #{curPage}, #{pageSize}
+    </select>
+
+    <select id="listMinorityIdByCondition" resultType="Integer">
+        SELECT `id`
+        FROM `t_dispatch_info` tdi
+        <where>
+            <include refid="queryMinorityCondition"/>
+            AND t_dispatch_info.is_deleted = 2
+        </where>
+        ORDER BY tdi.`id` DESC
+        LIMIT #{curPage}, #{pageSize}
+    </select>
+
+    <select id="listAllExportInfo" resultType="DispatchExportDto">
+        SELECT tdi.`id` AS id,
+        tdi.`stu_status_info_id` AS statusInfoId,
+        tssi.`name` AS name,
+        tssi.`id_number` AS idNumber,
+        tssi.`candidate_number` AS candidateNumber,
+        tssi.`student_number` AS studentNumber,
+        (SELECT CASE WHEN tssi.`sex` = 1 THEN "男" WHEN tssi.`sex` = 2 THEN "女" END) AS sex,
+        tdi.`agreement_number` AS agreementNumber,
+        tdi.`whereaboutgo_id` AS whereaboutgoId,
+        (SELECT twc.`whereaboutgo` FROM t_whereaboutgo_code twc WHERE tdi.`whereaboutgo_id` = twc.`whereaboutgo_id`) AS whereaboutgo,
+        tdi.`company_name` AS companyName,
+        tdi.`organization_code` AS organizationCode,
+        tdi.`city_id` AS cityId,
+        (SELECT tpc.`show_name` FROM t_place_code tpc WHERE tdi.`city_id` = tpc.`place_id`) AS cityName,
+        tdi.`property_id` AS propertyId,
+        (SELECT tcp.`property_name` FROM `t_company_property` tcp WHERE tdi.`property_id` = tcp.`property_code`) AS propertyName,
+        tdi.`trade_id` AS tradeId,
+        (SELECT tct.`trade_name` FROM `t_company_trade` tct WHERE tdi.`trade_id` = tct.`trade_id`) AS tradeName,
+        tdi.`subordinate_department` AS subordinateDepartment,
+        tdi.`job_id` AS jobId,
+        (SELECT tjc.`job` FROM `t_job_code` tjc WHERE tdi.`job_id` = tjc.`job_id`) AS job,
+        tdi.`full_address` AS fullAddress,
+        tdi.`company_postcode` AS companyPostcode,
+        tdi.`company_contact_person` AS companyContactPerson,
+        tdi.`contact_person_fax` AS contactPersonFax,
+        tdi.`contact_person_tele` AS contactPersonTele,
+        tdi.`contact_person_mobile` AS contactPersonMobile,
+        tdi.`contact_person_email` AS contactPersonEmail,
+        tdi.`report_mode_id` AS reportModeId,
+        (SELECT trc.`report_mode` FROM `t_report_code` trc WHERE tdi.`report_mode_id` = trc.`report_mode_id`) AS reportMode,
+        tdi.`report_company` AS reportCompany,
+        tdi.`report_company_address` AS reportCompanyAddress,
+        (SELECT tpc.`show_name` FROM t_place_code tpc WHERE tdi.`report_company_address` = tpc.`place_id`) AS reportAddressName,
+        (SELECT CASE WHEN tdi.`accept_file` = 0 THEN "否" WHEN tdi.`accept_file` = 1 THEN "是" END ) AS acceptFile,
+        tdi.`file_company_postcode` AS fileCompanyPostcode,
+        tdi.`file_company` AS fileCompany,
+        tdi.`file_company_address` AS fileCompanyAddress,
+        (SELECT tpc.`show_name` FROM t_place_code tpc WHERE tdi.`file_company_address` = tpc.`place_id`) AS fileAddressName,
+        tdi.`accept_file_department` AS acceptFileDepartment,
+        tdi.`accept_file_person` AS acceptFilePerson,
+        tdi.`accept_file_tele` AS acceptFileTele,
+        (SELECT CASE WHEN tdi.`accept_hukou` = 0 THEN "否" WHEN tdi.`accept_hukou` = 1 THEN "是" END ) AS acceptHukou
+        FROM `t_dispatch_info` tdi,
+        `t_stu_status_information` tssi
+        WHERE tdi.`current_agreement` = 1
+        AND tdi.`stu_status_info_id` = tssi.`id`
+        AND tdi.is_deleted = 2
+    </select>
+
+    <update id="updateCurrentAgreement" parameterType="com.pandawork.nenu.oa.common.entity.dispatch.DispatchInfo">
+        UPDATE t_dispatch_info
+        SET current_agreement = 0
+        WHERE
+        stu_status_info_id = #{statusInfoId}
+    </update>
+
+    <insert id ="newAgreement" parameterType="com.pandawork.nenu.oa.common.entity.dispatch.DispatchInfo">
+        INSERT INTO
+        `t_dispatch_info`
+        (
+        stu_status_info_id,
+        agreement_number,
+        current_agreement
+        )
+        VALUES (
+        #{statusInfoId},
+        #{agreementNumber},
+        1
+        )
+    </insert>
+
+    <!--单继重 派遣假删-->
+    <update id="deleteById">
+        UPDATE t_dispatch_info tdi
+        SET `is_deleted` = 1
+        WHERE tdi.id = #{dispatchId}
+    </update>
+
+    <select id="queryDispatchByStuStatusInfoId" resultMap="pw.DispatchInfo">
+        SELECT *
+        FROM t_dispatch_info disInfo
+        WHERE disInfo.stu_status_info_id = #{stuStatusInfoId}
+        AND disInfo.is_deleted = 2
+    </select>
+
+    <sql id="queryMinorityCondition">
+        tdi.`current_agreement` = 1
+        <if test="showUncommitted != 1">
+            AND tdi.`check_status` &gt; 1
+        </if>
+        <if test="college > 0">
+            AND tssi.`college_code` = #{college}
+        </if>
+        <if test="province > 0">
+            AND tssi.`origin_place_code` LIKE CONCAT(#{province}, '%')
+        </if>
+        <if test="colleges != null and colleges.size() > 0">
+            AND tssi.`college_code` IN
+            <foreach collection="colleges" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="majors != null and majors.size() > 0">
+            AND tssi.`major_code` IN
+            <foreach collection="majors" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qualificationNow > 0">
+            AND tssi.`qualification_now` = #{qualificationNow}
+        </if>
+        <choose>
+            <when test="nation != null">
+                AND tssi.`nation_code` = #{nation}
+            </when>
+            <otherwise>
+                AND tssi.`nation_code` != "01"
+            </otherwise>
+        </choose>
+    </sql>
+
+    <select id="queryDispatchInfoByStuStatusInfoId" resultMap="pw.DispatchInfo">
+        SELECT *
+        FROM t_dispatch_info disInfo
+        WHERE disInfo.stu_status_info_id = #{stuStatusInfoId}
+    </select>
+
+    <update id="batchAudit">
+        UPDATE `t_dispatch_info`
+        SET `deputy_secretary_check_result` = 2,`deputy_secretary_check_reason` = "信息属实",`deputy_secretary_check_operator` = #{realName}, `deputy_secretary_check_time`= #{date}
+        WHERE `id` IN
+        <foreach collection="ids" open="(" separator="," close=")"  item="id">
+            #{id}
+        </foreach>
+    </update>
+
+    <!--单继重 大导出 -->
+    <select id="exportAll" resultType="ExportAllDto" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto">
+        SELECT
+        t_stu_status_information.`id` AS stuStatusId,
+        t_dispatch_info.`id` AS dispatchId,
+        t_stu_status_information.`name` AS name,
+        t_stu_status_information.`id_number` AS idNumber,
+        t_stu_status_information.`candidate_number` AS candidateNumber,
+        t_stu_status_information.`student_number` AS studentNumber,
+        (SELECT CASE WHEN t_stu_status_information.`sex` = 1 THEN "男" WHEN t_stu_status_information.`sex` = 2 THEN "女" END) AS sex,
+        t_stu_status_information.`sex` AS sexCode,
+        t_stu_status_information.`nation_code` AS nationCode,
+        (SELECT tnc.`nation` FROM `t_nation_code` tnc WHERE t_stu_status_information.`nation_code` = tnc.`nation_id`) AS nation,
+        t_stu_status_information.`political_stand_code` AS politicalStandCode,
+        (SELECT tpc.`political_stand` FROM `t_political_code` tpc WHERE t_stu_status_information.`political_stand_code` = tpc.`political_stand_id`) AS politicalStand,
+        t_stu_status_information.`school_code` AS schoolCode,
+        (SELECT tsc.`school` FROM `t_school_code` tsc WHERE t_stu_status_information.`school_code` = tsc.`school_id`) AS school,
+        t_stu_status_information.`stu_length` AS stuLength,
+        t_stu_status_information.`qualification_code` AS qualificationCode,
+        (SELECT tqc.`qualification` FROM `t_qualification_code` tqc WHERE t_stu_status_information.`qualification_code` = tqc.`qualification_id`) AS qualification,
+        t_stu_status_information.`college_code` AS collegeCode,
+        (SELECT tcc.`college` FROM `t_college_code` tcc WHERE t_stu_status_information.`college_code` = tcc.`college_id`) AS college,
+        t_stu_status_information.`grade` AS grade,
+        t_stu_status_information.`major_qualification` AS majorQualification,
+        t_stu_status_information.`major_code` AS majorCode,
+        t_stu_status_information.`other_major` AS otherMajor,
+        (SELECT tmc.`major_name` FROM `t_major_code` tmc WHERE t_stu_status_information.`major_code` = tmc.`major_id` AND t_stu_status_information.`major_qualification` = tmc.`qualification`) AS major,
+        t_stu_status_information.`intend_whereabouts_code` AS intendWhereaboutsCode,
+        (SELECT twc.`whereaboutgo` FROM `t_whereaboutgo_intend_code` twc WHERE t_stu_status_information.`intend_whereabouts_code` = twc.`whereaboutgo_id`) AS intendWhereabouts,
+        t_stu_status_information.`difficulty_code` AS difficultyCode,
+        (SELECT tdc.`difficulty_mode` FROM `t_difficulty_code` tdc WHERE t_stu_status_information.`difficulty_code` = tdc.`difficulty_id`) AS difficulty,
+        t_stu_status_information.`normal_stu_code` AS normalStuCode,
+        (SELECT tnc.`normal_stu` FROM `t_normal_code` tnc WHERE t_stu_status_information.`normal_stu_code` = tnc.`normal_stu_id`) AS normalStu,
+        t_stu_status_information.`origin_place_code` AS originPlaceCode,
+         (SELECT tpc.`show_name` FROM `t_place_code` tpc WHERE t_stu_status_information.`origin_place_code` = tpc.`place_id`) AS originPlace,
+        t_stu_status_information.`training_mode_code` AS trainingModeCode,
+        (SELECT ttmc.`training_mode` FROM `t_training_mode_code` ttmc WHERE t_stu_status_information.`training_mode_code` = ttmc.`training_mode_id`) AS trainingMode,
+        t_stu_status_information.`weipei_unit` AS weipeiUnit,
+        t_stu_status_information.`weipei_unit_place_code` AS weipeiUnitPlaceCode,
+        t_stu_status_information.`weipei_unit_place` AS weipeiUnitPlace,
+        DATE_FORMAT(t_stu_status_information.`regist_date`,'%Y-%m-%d') AS registDate,
+        DATE_FORMAT(t_stu_status_information.`graduation_date`,'%Y-%m-%d') AS graduationDate,
+        t_stu_status_information.`pre_hukou_location` AS preHukouLocation,
+        (SELECT CASE WHEN t_stu_status_information.`is_hukou_into_school` = 0 THEN "否" WHEN t_stu_status_information.`is_hukou_into_school` = 1 THEN "是" END) AS isHukouIntoSchool,
+        t_stu_status_information.`pre_archive_location` AS preArchiveLocation,
+        (SELECT CASE WHEN t_stu_status_information.`is_archive_into_school` = 0 THEN "否" WHEN t_stu_status_information.`is_archive_into_school` = 1 THEN "是" END) AS isArchiveIntoSchool,
+        t_stu_status_information.`cellphone` AS cellphone,
+        t_stu_status_information.`cellphone_bak` AS cellphoneBak,
+        t_stu_status_information.`qq` AS qq,
+        t_stu_status_information.`email` AS email,
+        t_stu_status_information.`home_phone` AS homePhone,
+        t_stu_status_information.`relative_phone` AS relativePhone,
+        t_stu_status_information.`weixin` AS weixin,
+        t_stu_status_information.`home_address` AS homeAddress,
+        t_dispatch_info.`agreement_number` AS agreementNumber,
+        t_dispatch_info.`whereaboutgo_id` AS whereaboutgoId,
+        (SELECT twc.`whereaboutgo` FROM t_whereaboutgo_code twc WHERE t_dispatch_info.`whereaboutgo_id` = twc.`whereaboutgo_id`) AS whereaboutgo,
+        t_dispatch_info.`company_name` AS companyName,
+        t_dispatch_info.`organization_code` AS organizationCode,
+        t_dispatch_info.`city_id` AS cityId,
+        (SELECT tpc.`show_name` FROM t_place_code tpc WHERE t_dispatch_info.`city_id` = tpc.`place_id`) AS cityName,
+        t_dispatch_info.`property_id` AS propertyId,
+        (SELECT tcp.`property_name` FROM `t_company_property` tcp WHERE t_dispatch_info.`property_id` = tcp.`property_code`) AS propertyName,
+        t_dispatch_info.`trade_id` AS tradeId,
+        (SELECT tct.`trade_name` FROM `t_company_trade` tct WHERE t_dispatch_info.`trade_id` = tct.`trade_id`) AS trade,
+        t_dispatch_info.`subordinate_department` AS subordinateDepartment,
+        t_dispatch_info.`job_id` AS jobId,
+        (SELECT tjc.`job` FROM `t_job_code` tjc WHERE t_dispatch_info.`job_id` = tjc.`job_id`) AS job,
+        t_dispatch_info.`full_address` AS fullAddress,
+        t_dispatch_info.`company_postcode` AS companyPostcode,
+        t_dispatch_info.`company_contact_person` AS companyContactPerson,
+        t_dispatch_info.`contact_person_fax` AS contactPersonFax,
+        t_dispatch_info.`contact_person_tele` AS contactPersonTele,
+        t_dispatch_info.`contact_person_mobile` AS contactPersonMobile,
+        t_dispatch_info.`contact_person_email` AS contactPersonEmail,
+        t_dispatch_info.`report_mode_id` AS reportModeId,
+        (SELECT trc.`report_mode` FROM `t_report_code` trc WHERE t_dispatch_info.`report_mode_id` = trc.`report_mode_id`) AS reportMode,
+        t_dispatch_info.`report_company` AS reportCompany,
+        t_dispatch_info.`report_company_address` AS reportCompanyAddress,
+        (SELECT tpc.`show_name` FROM t_place_code tpc WHERE t_dispatch_info.`report_company_address` = tpc.`place_id`) AS reportAddressName,
+        (SELECT CASE WHEN t_dispatch_info.`accept_file` = 0 THEN "否" WHEN t_dispatch_info.`accept_file` = 1 THEN "是" END ) AS acceptFile,
+        t_dispatch_info.`file_company_postcode` AS fileCompanyPostcode,
+        t_dispatch_info.`file_company` AS fileCompany,
+        t_dispatch_info.`file_company_address` AS fileCompanyAddress,
+        (SELECT tpc.`show_name` FROM t_place_code tpc WHERE t_dispatch_info.`file_company_address` = tpc.`place_id`) AS fileAddressName,
+        t_dispatch_info.`accept_file_department` AS acceptFileDepartment,
+        t_dispatch_info.`accept_file_person` AS acceptFilePerson,
+        t_dispatch_info.`accept_file_tele` AS acceptFileTele,
+        (SELECT CASE WHEN t_dispatch_info.`accept_hukou` = 0 THEN "否" WHEN t_dispatch_info.`accept_hukou` = 1 THEN "是" END ) AS acceptHukou
+        FROM `t_dispatch_info` ,
+        `t_stu_status_information`
+        <where>
+            t_dispatch_info.`current_agreement` = 1
+            AND t_dispatch_info.`stu_status_info_id` = t_stu_status_information.`id`
+            AND t_dispatch_info.is_deleted = 2
+            <include refid="listQueryCondition"></include>
+        </where>
+    </select>
+
+    <select id="queryAdminRemark" resultType="DispatchAdminRemark">
+        SELECT remark
+        FROM t_dispatch_admin_remark
+        WHERE `dispatch_id` = #{dispatchId}
+    </select>
+
+    <select id="queryDispatchExtendItem" resultType="DispatchExtendItem">
+        SELECT `enter_beijing` AS enterBeijing,
+        `enter_tianjin` AS enterTianjin,
+        `enter_shanghai` AS enterShanghai,
+        `orientation_cancel_contract` AS orientationCancelContract,
+        `free_normal_cancel_contract` AS freeNormalCancelContract,
+        `free_normal_trans_provincial` AS freeNormalTransProvincial
+        FROM t_dispatch_extend
+        WHERE `dispatch_id` = #{dispatchId}
+    </select>
+
+    <select id="exportAllCounsellor" resultType="ExportAllCounsellorDto" parameterType="com.pandawork.nenu.oa.common.dto.dispatch.DispatchQueryDto">
+        SELECT
+        DISTINCT
+        t_stu_status_information.`id` AS stuStatusId,
+        t_dispatch_info.`id` AS dispatchId,
+        t_stu_status_information.`name` AS name,
+        t_stu_status_information.`id_number` AS idNumber,
+        t_stu_status_information.`candidate_number` AS candidateNumber,
+        t_stu_status_information.`student_number` AS studentNumber,
+        (SELECT CASE WHEN t_stu_status_information.`sex` = 1 THEN "男" WHEN t_stu_status_information.`sex` = 2 THEN "女" END) AS sex,
+        t_stu_status_information.`sex` AS sexCode,
+        t_stu_status_information.`nation_code` AS nationCode,
+        (SELECT tnc.`nation` FROM `t_nation_code` tnc WHERE t_stu_status_information.`nation_code` = tnc.`nation_id`) AS nation,
+        t_stu_status_information.`political_stand_code` AS politicalStandCode,
+        (SELECT tpc.`political_stand` FROM `t_political_code` tpc WHERE t_stu_status_information.`political_stand_code` = tpc.`political_stand_id`) AS politicalStand,
+        t_stu_status_information.`school_code` AS schoolCode,
+        (SELECT tsc.`school` FROM `t_school_code` tsc WHERE t_stu_status_information.`school_code` = tsc.`school_id`) AS school,
+        t_stu_status_information.`stu_length` AS stuLength,
+        t_stu_status_information.`qualification_code` AS qualificationCode,
+        (SELECT tqc.`qualification` FROM `t_qualification_code` tqc WHERE t_stu_status_information.`qualification_code` = tqc.`qualification_id`) AS qualification,
+        t_stu_status_information.`college_code` AS collegeCode,
+        (SELECT tcc.`college` FROM `t_college_code` tcc WHERE t_stu_status_information.`college_code` = tcc.`college_id`) AS college,
+        t_stu_status_information.`grade` AS grade,
+        t_stu_status_information.`major_qualification` AS majorQualification,
+        t_stu_status_information.`major_code` AS majorCode,
+        t_stu_status_information.`other_major` AS otherMajor,
+        (SELECT tmc.`major_name` FROM `t_major_code` tmc WHERE t_stu_status_information.`major_code` = tmc.`major_id` AND t_stu_status_information.`major_qualification` = tmc.`qualification`) AS major,
+        t_stu_status_information.`intend_whereabouts_code` AS intendWhereaboutsCode,
+        (SELECT twc.`whereaboutgo` FROM `t_whereaboutgo_code` twc WHERE t_stu_status_information.`intend_whereabouts_code` = twc.`whereaboutgo_id`) AS intendWhereabouts,
+        t_stu_status_information.`difficulty_code` AS difficultyCode,
+        (SELECT tdc.`difficulty_mode` FROM `t_difficulty_code` tdc WHERE t_stu_status_information.`difficulty_code` = tdc.`difficulty_id`) AS difficulty,
+        t_stu_status_information.`normal_stu_code` AS normalStuCode,
+        (SELECT tnc.`normal_stu` FROM `t_normal_code` tnc WHERE t_stu_status_information.`normal_stu_code` = tnc.`normal_stu_id`) AS normalStu,
+        t_stu_status_information.`origin_place_code` AS originPlaceCode,
+        (SELECT tpc.`show_name` FROM `t_place_code` tpc WHERE t_stu_status_information.`origin_place_code` = tpc.`place_id`) AS originPlace,
+        t_stu_status_information.`training_mode_code` AS trainingModeCode,
+        (SELECT ttmc.`training_mode` FROM `t_training_mode_code` ttmc WHERE t_stu_status_information.`training_mode_code` = ttmc.`training_mode_id`) AS trainingMode,
+        t_stu_status_information.`weipei_unit` AS weipeiUnit,
+        t_stu_status_information.`weipei_unit_place_code` AS weipeiUnitPlaceCode,
+        t_stu_status_information.`weipei_unit_place` AS weipeiUnitPlace,
+        DATE_FORMAT(t_stu_status_information.`regist_date`,'%Y-%m-%d') AS registDate,
+        DATE_FORMAT(t_stu_status_information.`graduation_date`,'%Y-%m-%d') AS graduationDate,
+        t_stu_status_information.`pre_hukou_location` AS preHukouLocation,
+        (SELECT CASE WHEN t_stu_status_information.`is_hukou_into_school` = 0 THEN "否" WHEN t_stu_status_information.`is_hukou_into_school` = 1 THEN "是" END) AS isHukouIntoSchool,
+        t_stu_status_information.`pre_archive_location` AS preArchiveLocation,
+        (SELECT CASE WHEN t_stu_status_information.`is_archive_into_school` = 0 THEN "否" WHEN t_stu_status_information.`is_archive_into_school` = 1 THEN "是" END) AS isArchiveIntoSchool,
+        t_stu_status_information.`cellphone` AS cellphone,
+        t_stu_status_information.`cellphone_bak` AS cellphoneBak,
+        t_stu_status_information.`qq` AS qq,
+        t_stu_status_information.`email` AS email,
+        t_stu_status_information.`home_phone` AS homePhone,
+        t_stu_status_information.`relative_phone` AS relativePhone,
+        t_stu_status_information.`weixin` AS weixin,
+        t_stu_status_information.`home_address` AS homeAddress,
+        t_dispatch_info.`agreement_number` AS agreementNumber,
+        t_dispatch_info.`whereaboutgo_id` AS whereaboutgoId,
+        (SELECT twc.`whereaboutgo` FROM t_whereaboutgo_code twc WHERE t_dispatch_info.`whereaboutgo_id` = twc.`whereaboutgo_id`) AS whereaboutgo,
+        t_dispatch_info.`company_name` AS companyName,
+        t_dispatch_info.`organization_code` AS organizationCode,
+        t_dispatch_info.`city_id` AS cityId,
+        (SELECT tpc.`show_name` FROM t_place_code tpc WHERE t_dispatch_info.`city_id` = tpc.`place_id`) AS cityName,
+        t_dispatch_info.`property_id` AS propertyId,
+        (SELECT tcp.`property_name` FROM `t_company_property` tcp WHERE t_dispatch_info.`property_id` = tcp.`property_code`) AS propertyName,
+        t_dispatch_info.`trade_id` AS tradeId,
+        (SELECT tct.`trade_name` FROM `t_company_trade` tct WHERE t_dispatch_info.`trade_id` = tct.`trade_id`) AS trade,
+        t_dispatch_info.`subordinate_department` AS subordinateDepartment,
+        t_dispatch_info.`job_id` AS jobId,
+        (SELECT tjc.`job` FROM `t_job_code` tjc WHERE t_dispatch_info.`job_id` = tjc.`job_id`) AS job,
+        t_dispatch_info.`full_address` AS fullAddress,
+        t_dispatch_info.`company_postcode` AS companyPostcode,
+        t_dispatch_info.`company_contact_person` AS companyContactPerson,
+        t_dispatch_info.`contact_person_fax` AS contactPersonFax,
+        t_dispatch_info.`contact_person_tele` AS contactPersonTele,
+        t_dispatch_info.`contact_person_mobile` AS contactPersonMobile,
+        t_dispatch_info.`contact_person_email` AS contactPersonEmail,
+        t_dispatch_info.`report_mode_id` AS reportModeId,
+        (SELECT trc.`report_mode` FROM `t_report_code` trc WHERE t_dispatch_info.`report_mode_id` = trc.`report_mode_id`) AS reportMode,
+        t_dispatch_info.`report_company` AS reportCompany,
+        t_dispatch_info.`report_company_address` AS reportCompanyAddress,
+        (SELECT tpc.`show_name` FROM t_place_code tpc WHERE t_dispatch_info.`report_company_address` = tpc.`place_id`) AS reportAddressName,
+        (SELECT CASE WHEN t_dispatch_info.`accept_file` = 0 THEN "否" WHEN t_dispatch_info.`accept_file` = 1 THEN "是" END ) AS acceptFile,
+        t_dispatch_info.`file_company_postcode` AS fileCompanyPostcode,
+        t_dispatch_info.`file_company` AS fileCompany,
+        t_dispatch_info.`file_company_address` AS fileCompanyAddress,
+        (SELECT tpc.`show_name` FROM t_place_code tpc WHERE t_dispatch_info.`file_company_address` = tpc.`place_id`) AS fileAddressName,
+        t_dispatch_info.`accept_file_department` AS acceptFileDepartment,
+        t_dispatch_info.`accept_file_person` AS acceptFilePerson,
+        t_dispatch_info.`accept_file_tele` AS acceptFileTele,
+        (SELECT CASE WHEN t_dispatch_info.`accept_hukou` = 0 THEN "否" WHEN t_dispatch_info.`accept_hukou` = 1 THEN "是" END ) AS acceptHukou
+        FROM
+        `t_dispatch_info`,
+        `t_stu_status_information`
+        LEFT JOIN t_major_code ON t_stu_status_information.major_code = t_major_code.major_id
+        LEFT JOIN t_sys_user_info ON t_sys_user_info.major_code = t_major_code.major_id
+        WHERE t_dispatch_info.`current_agreement` = 1
+        AND t_dispatch_info.`stu_status_info_id` = t_stu_status_information.`id`
+        <if test="userId!=null">
+            AND
+            t_sys_user_info.user_id = #{userId}
+            AND t_dispatch_info.is_deleted = 2
+            <include refid="listQueryCondition"/>
+        </if>
+    </select>
+
+</mapper>

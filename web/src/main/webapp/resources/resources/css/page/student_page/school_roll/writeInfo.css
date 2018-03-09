@@ -1,0 +1,153 @@
+/*----------------------------------------------------
+@Filename: writeInfo.css
+@Description: 填写学籍信息页面
+@Version: 1.0.0(2016-07-14)
+@author: qiyuan
+=======================================================
+2016-05-09:
+初始生成。
+------------------------------------------------------*/
+* {
+	box-sizing: border-box;
+}
+.container {
+	position: relative;
+}
+.sidebar {
+	top: 1px;
+}
+.remind {
+	background: rgb(245, 245, 245);
+    border-bottom: 1px solid rgb(229, 229, 229);
+    color: red;
+    line-height: 32px;
+    min-height: 32px;
+    padding: 7px 30px;
+    font-size: 16px;
+}
+.write_form {
+	width: 96%;
+	margin: 25px;
+}
+.write_form a {
+	float: right;
+	margin-right: 20px;
+	text-decoration: underline;
+}
+.write_form a.phone-hint {
+	position: absolute;
+	right: -33px;
+}
+.write_form h2 {
+	font-size: 20px;
+	margin: 10px 0;
+}
+.write_form > div.summary {
+	width: 100%;
+	border: 1px solid rgb(204,204,204);
+	padding: 15px 20px;
+}
+.summary > div,.summary > span {
+	min-height: 56px;
+	float: left;
+	position: relative;
+}
+.summary > div {
+	width: 25%;
+	padding: 7px 0 7px 11%;
+}
+label.matter {
+	width: 39%;
+    left: 0;
+    position: absolute;
+    text-align: right;
+    top: 7px;
+}
+label.no-matter {
+	width: 19.5%;
+    left: 0;
+    position: absolute;
+    text-align: right;
+    top: 7px;
+}
+.major-name,.unit-addr {
+	width: 50%;
+	padding: 7px 0 7px 11%;
+}
+.summary > div select,.summary > span select {
+	height: 2em;
+	color: rgb(57,57,57);
+	margin-left: -4px;
+}
+.summary > div select {
+	width: 91.5%;
+}
+.summary > span select {
+	width: 28%;
+}
+.write_form input[type=text] {
+	width: 90%;
+	height: 2em;
+}
+.write_form input[type=radio] {
+	vertical-align: -2px;
+	margin-left: 22%;
+}
+.write_form input[type=button],.write_form input[type=submit] {
+	background: rgb(111, 179, 224);
+	color: #fff;
+	border: 0;
+	padding: 3px 6px;
+}
+.btnbox {
+	width: 23%;
+	margin: 50px auto;
+}
+.write_form input[type=submit] {
+	margin-left: 46%;
+}
+.save,.write_form input[type=submit] {
+	font-size: 16px;
+	padding: 4px 8px;
+}
+.must {
+	color: red;
+}
+.other-major,.summary > div > p {
+	display: none;
+}
+.summary > div > p {
+	color: red;
+}
+.test {
+	width: 20px;
+	height: 20px;
+}
+/*弹出框*/
+.hint-box {
+	display: none;
+	position: absolute;
+	top: 30%;
+	left: 38%;
+	background: rgb(111,179,224);
+	width: 477px;
+	height: 354px;
+	box-shadow: 0 0 30px;
+	border-radius: 6px;
+	font-size: 14px;
+}
+.hint-box p {
+	vertical-align: center;
+	font-size: 18px;
+}
+.hint-box span {
+	display: inline-block;
+	width: 120px;
+	height: 28px;
+    background: #fff;
+    border: 1px solid #ddd;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 0 188px;
+}

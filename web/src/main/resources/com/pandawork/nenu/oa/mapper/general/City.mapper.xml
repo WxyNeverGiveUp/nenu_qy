@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.general.CityPropertyMapper">
+
+    <select id="listByProvinceId" resultMap="pw.CityProperty">
+        SELECT *
+        FROM `t_param_city`
+        WHERE province_id = #{provinceId}
+    </select>
+
+    <select id="listAll" resultMap="pw.CityProperty">
+        SELECT *
+        FROM `t_param_city`
+    </select>
+
+    <select id="queryCityById" resultType="String">
+        SELECT name
+        FROM `t_param_city`
+        WHERE id =#{id}
+    </select>
+
+</mapper>

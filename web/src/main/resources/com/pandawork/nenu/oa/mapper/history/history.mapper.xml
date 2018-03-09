@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pandawork.nenu.oa.mapper.history.StuHistoryDataMapper">
+
+
+    <select id="countByCondition" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `t_stu_history_data` tsha
+        <where>
+            <include refid="queryCondition"/>
+        </where>
+    </select>
+
+    <select id="listStuHistoryDataByCondition" resultType="StuHistoryDataDto" >
+        SELECT DISTINCT tsha.`id` AS id,
+        tsha.`year` AS year,
+        tsha.`name` AS name,
+        (SELECT CASE WHEN tsha.`messenger` = 1 THEN "是" WHEN tsha.`messenger` = 2 THEN "否" END) AS messenger,
+        (SELECT CASE WHEN tsha.`sex` = 1 THEN "男" WHEN tsha.`sex` = 2 THEN "女" END) AS sex,
+        (SELECT tnc.`nation` FROM `t_nation_code` tnc WHERE tsha.`nation_code` = tnc.`nation_id` )AS nation,
+        tsha.`major_name` AS majorName,
+        tsha.`origin_place` AS originPlace,
+        (SELECT CASE
+            WHEN tsha.`whereabout_go` = 1 THEN "待就业"
+            WHEN tsha.`whereabout_go` = 2 THEN "升学"
+            WHEN tsha.`whereabout_go` = 3 THEN "签就业协议形式就业"
+            WHEN tsha.`whereabout_go` = 4 THEN "灵活就业"
+            WHEN tsha.`whereabout_go` = 5 THEN "签劳动合同形式就业"
+            WHEN tsha.`whereabout_go` = 6 THEN "其他录用形式就业"
+            WHEN tsha.`whereabout_go` = 7 THEN "自由职业"
+            WHEN tsha.`whereabout_go` = 8 THEN "出国、出境"
+            WHEN tsha.`whereabout_go` = 9 THEN  "自主创业"
+            WHEN tsha.`whereabout_go` = 10 THEN "地方基层项目"
+            WHEN tsha.`whereabout_go` = 11 THEN "其他暂不就业"
+            WHEN tsha.`whereabout_go` = 12 THEN "不就业拟升学"
+            WHEN tsha.`whereabout_go` = 13 THEN "国家基层项目"
+            WHEN tsha.`whereabout_go` = 14 THEN "应征义务兵"
+            WHEN tsha.`whereabout_go` = 15 THEN "科研助理"
+            END
+        )AS whereAboutGo,
+        tsha.`unit_name` AS unitName,
+        tsha.`unit_province` AS unitProvince,
+        tsha.`unit_city` AS unitCity,
+
+        (SELECT CASE
+            WHEN tsha.`unit_property` = 1 THEN "其他企业"
+            WHEN tsha.`unit_property` = 2 THEN "国有企业"
+            WHEN tsha.`unit_property` = 3 THEN "待就业"
+            WHEN tsha.`unit_property` = 4 THEN "其他教学单位"
+            WHEN tsha.`unit_property` = 5 THEN "其他灵活就业"
+            WHEN tsha.`unit_property` = 6 THEN "自由职业"
+            WHEN tsha.`unit_property` = 7 THEN "出国、出境"
+            WHEN tsha.`unit_property` = 8 THEN "升学"
+            WHEN tsha.`unit_property` = 9 THEN "其他事业单位"
+            WHEN tsha.`unit_property` = 10 THEN "机关"
+            WHEN tsha.`unit_property` = 11 THEN "部队"
+            WHEN tsha.`unit_property` = 12 THEN "高等教育单位"
+            WHEN tsha.`unit_property` = 13 THEN "其他"
+            WHEN tsha.`unit_property` = 14 THEN "科研设计单位"
+            WHEN tsha.`unit_property` = 15 THEN "中等教育单位"
+            WHEN tsha.`unit_property` = 16 THEN "医疗卫生单位"
+            WHEN tsha.`unit_property` = 17 THEN "三资企业"
+            WHEN tsha.`unit_property` = 18 THEN "城镇社区"
+            WHEN tsha.`unit_property` = 19 THEN "农村建制村"
+            END
+        )AS unitProperty,
+
+        (SELECT CASE
+            WHEN tsha.`unit_industry` = 1 THEN "文化、体育和娱乐业"
+            WHEN tsha.`unit_industry` = 2 THEN "教育"
+            WHEN tsha.`unit_industry` = 3 THEN "公共管理、社会保障和社会组织"
+            WHEN tsha.`unit_industry` = 4 THEN "科学研究与技术服务业"
+            WHEN tsha.`unit_industry` = 5 THEN "居民服务、修理和其他服务业"
+            WHEN tsha.`unit_industry` = 6 THEN "制造业"
+            WHEN tsha.`unit_industry` = 7 THEN "租赁和商务服务业"
+            WHEN tsha.`unit_industry` = 8 THEN "金融业"
+            WHEN tsha.`unit_industry` = 9 THEN "电力、热力、燃气及水生产和供应业"
+            WHEN tsha.`unit_industry` = 10 THEN "信息传输、软件和信息技术服务业"
+            WHEN tsha.`unit_industry` = 11 THEN "农、林、牧、渔业"
+            WHEN tsha.`unit_industry` = 12 THEN "交通运输、仓储和邮政业"
+            WHEN tsha.`unit_industry` = 13 THEN "批发和零售业"
+            WHEN tsha.`unit_industry` = 14 THEN "房地产业"
+            WHEN tsha.`unit_industry` = 15 THEN "建筑业"
+            WHEN tsha.`unit_industry` = 16 THEN "卫生和社会工作"
+            WHEN tsha.`unit_industry` = 17 THEN "采矿业"
+            WHEN tsha.`unit_industry` = 18 THEN "住宿和餐饮业"
+            WHEN tsha.`unit_industry` = 19 THEN "军队"
+            WHEN tsha.`unit_industry` = 20 THEN "水利、环境和公共设施管理业"
+            END
+        )AS unitIndustry,
+
+        (SELECT tcc.`college` FROM `t_college_code` tcc WHERE tsha.`college_code` = tcc.`college_id`) AS college,
+        (SELECT CASE WHEN tsha.`major_qualification`= 1 THEN "研究生" WHEN tsha.`major_qualification` = 2 THEN "本科生" END) AS majorQualification,
+        (SELECT trc.`report_mode` FROM `t_report_code` trc WHERE tsha.`report_mode_code` = trc.`report_mode_id`) AS reportMode,
+        (SELECT tpc.`political_stand` FROM `t_political_code` tpc WHERE tsha.`political_stand_code` = tpc.`political_stand_id`) AS politicalStand,
+        (SELECT tnc.`normal_stu` FROM `t_normal_code` tnc WHERE tsha.`normal_stu_code` = tnc.`normal_stu_id`) AS normalStu,
+        (SELECT tdc.`difficulty_mode` FROM `t_difficulty_code` tdc WHERE tsha.`difficulty_code` = tdc.`difficulty_id`) AS difficultyMode,
+        tsha.`cellphone` AS cellphone
+        FROM `t_stu_history_data` tsha
+        <where>
+            <include refid="queryCondition"/>
+        </where>
+        ORDER BY tsha.`id` ASC
+        <!--ORDER BY tsha.`id` DESC-->
+        LIMIT #{curPage}, #{pageSize}
+    </select>
+
+    <sql id="queryCondition">
+        <if test="year != null and year != ''">
+            AND tsha.`year` = #{year}
+        </if>
+
+        <if test="messenger > 0">
+            AND  tsha.`messenger` = #{messenger}
+        </if>
+
+        <if test="sex > 0">
+            AND tsha.`sex` = #{sex}
+        </if>
+
+        <if test="majorName != null and majorName !=''" >
+            AND tsha.`major_name` = #{majorName}
+        </if>
+
+        <if test="originPlace != null and originPlace !=''">
+            AND tsha.`origin_place` = #{originPlace}
+        </if>
+
+        <if test="whereAboutGo != null and whereAboutGo != ''">
+            AND tsha.`whereabout_go` = #{whereAboutGo}
+        </if>
+
+        <if test="unitProvince != null and unitProvince != ''">
+            AND tsha.`unit_province` = #{unitProvince}
+        </if>
+
+        <if test="unitProperty != null and unitProperty != ''">
+            AND tsha.`unit_property` =#{unitProperty}
+        </if>
+
+        <if test="unitIndustry != null and unitIndustry != ''">
+            AND tsha.`unit_industry` = #{unitIndustry}
+        </if>
+
+        <if test="college != null and college != ''">
+            AND tsha.`college_code` = #{college}
+        </if>
+
+        <if test="colleges != null and colleges.size() > 0">
+            AND tsha.`college_code` IN
+            <foreach collection="colleges" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="majorQualification != null and majorQualification != ''" >
+            AND tsha.`major_qualification` = #{majorQualification}
+        </if>
+    </sql>
+
+</mapper>

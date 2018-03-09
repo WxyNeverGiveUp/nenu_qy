@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pandawork.nenu.oa.mapper.student.status.StuStatusInfoMapper">
+
+    <select id="queryByStuNumber" resultMap="pw.StuStatusInfo">
+        SELECT *
+        FROM `t_stu_status_information`
+        WHERE `student_number` = #{stuNumber}
+    </select>
+
+    <select id="queryByIdNumber" resultMap="pw.StuStatusInfo">
+        SELECT *
+        FROM `t_stu_status_information`
+        WHERE `id_number` = #{idNumber}
+    </select>
+
+    <select id="queryByCandidateNumber" resultMap="pw.StuStatusInfo">
+        SELECT *
+        FROM `t_stu_status_information`
+        WHERE `candidate_number` = #{candidateNumber}
+    </select>
+
+    <select id="queryDtoById" resultType="StuStatusInfoDto">
+        SELECT tssi.`id` AS id,
+        tssi.`name` AS name,
+        tssi.`id_number` AS idNumber,
+        tssi.`candidate_number` AS candidateNumber,
+        tssi.`student_number` AS studentNumber,
+        (SELECT CASE WHEN tssi.`sex` = 1 THEN "男" WHEN tssi.`sex` = 2 THEN "女" END) AS sex,
+        (SELECT tnc.`nation` FROM `t_nation_code` tnc WHERE tssi.`nation_code` = tnc.`nation_id`) AS nation,
+        (SELECT tpc.`political_stand` FROM `t_political_code` tpc WHERE tssi.`political_stand_code` = tpc.`political_stand_id`) AS politicalStand,
+        (SELECT tsc.`school` FROM `t_school_code` tsc WHERE tssi.`school_code` = tsc.`school_id`) AS school,
+        tssi.`stu_length` AS stuLength,
+        (SELECT tqc.`qualification` FROM `t_qualification_code` tqc WHERE tssi.`qualification_code` = tqc.`qualification_id`) AS qualification,
+        (SELECT tcc.`college` FROM `t_college_code` tcc WHERE tssi.`college_code` = tcc.`college_id`) AS college,
+        <!--(SELECT tp.`protocol_type` FROM `t_protocol` tp WHERE tssi.`id` = tp.`status_info_id`) AS protocolType,-->
+        tssi.`grade` AS grade,
+        tssi.`major_qualification` AS majorQualification,
+        tssi.`other_major` AS otherMajor,
+        tssi.`major_code` AS majorCode,
+        tssi.`check_status` AS checkStatus,
+        (SELECT tmc.`major_name` FROM `t_major_code` tmc WHERE tssi.`major_code` = tmc.`major_id` AND tssi.`major_qualification` = tmc.`qualification`) AS major,
+        (SELECT twic.`whereaboutgo` FROM `t_whereaboutgo_intend_code` twic WHERE tssi.`intend_whereabouts_code` = twic.`whereaboutgo_id`) AS intendWhereabouts,
+        (SELECT tdc.`difficulty_mode` FROM `t_difficulty_code` tdc WHERE tssi.`difficulty_code` = tdc.`difficulty_id`) AS difficulty,
+        (SELECT tnc.`normal_stu` FROM `t_normal_code` tnc WHERE tssi.`normal_stu_code` = tnc.`normal_stu_id`) AS normalStu,
+        (SELECT tpc.`show_name` FROM `t_place_code` tpc WHERE tssi.`origin_place_code` = tpc.`place_id`) AS originPlace,
+        (SELECT tpc.`place_class` FROM t_place_code tpc WHERE tpc.`place_id` = tssi.`origin_place_code`) AS originPlaceType,
+       tssi.`origin_place_import` AS originPlaceImport,
+        (SELECT ttmc.`training_mode` FROM `t_training_mode_code` ttmc WHERE tssi.`training_mode_code` = ttmc.`training_mode_id`) AS trainingMode,
+        tssi.`weipei_unit` AS weipeiUnit,
+        tssi.`weipei_unit_place` AS weipeiUnitPlace,
+        DATE_FORMAT(tssi.`regist_date`,'%Y-%m-%d') AS registDate,
+        DATE_FORMAT(tssi.`graduation_date`,'%Y-%m-%d') AS graduationDate,
+        tssi.`pre_hukou_location` AS preHukouLocation,
+        (SELECT CASE WHEN tssi.`is_hukou_into_school` = 0 THEN "否" WHEN tssi.`is_hukou_into_school` = 1 THEN "是" END) AS isHukouIntoSchool,
+        tssi.`pre_archive_location` AS preArchiveLocation,
+        (SELECT CASE WHEN tssi.`is_archive_into_school` = 0 THEN "否" WHEN tssi.`is_archive_into_school` = 1 THEN "是" END) AS isArchiveIntoSchool,
+        tssi.`cellphone` AS cellphone,
+        tssi.`cellphone_bak` AS cellphoneBak,
+        tssi.`qq` AS qq,
+        tssi.`email` AS email,
+        tssi.`home_phone` AS homePhone,
+        tssi.`relative_phone` AS relativePhone,
+        tssi.`weixin` AS weixin,
+        tssi.`home_address` AS homeAddress,
+        tssi.`dormitory` AS dormitory,
+        tssi.`dormitory_num` AS dormitoryNum,
+        tssi.`origin_place_import` AS originPlaceImport,
+        (SELECT CASE WHEN tssi.`counsellor_check_result` = 1 THEN "未审核" WHEN tssi.`counsellor_check_result` = 2 THEN "审核通过"
+        WHEN tssi.`counsellor_check_result` = 3 THEN "待修改" WHEN tssi.`counsellor_check_result` = 4 THEN "已修改" END) AS counsellorCheckResult,
+        tssi.`counsellor_check_reason` AS counsellorCheckReason,
+        tssi.`counsellor_check_operator` AS counsellorCheckOperator,
+        DATE_FORMAT(tssi.`counsellor_check_time`,'%Y-%m-%d %T') AS counsellorCheckTime,
+        (SELECT CASE WHEN tssi.`deputy_secretary_check_result` = 1 THEN "未审核" WHEN tssi.`deputy_secretary_check_result` = 2 THEN "审核通过"
+        WHEN tssi.`deputy_secretary_check_result` = 3 THEN "待修改" WHEN tssi.`deputy_secretary_check_result` = 4 THEN "已修改" END) AS deputySecretaryCheckResult,
+        tssi.`deputy_secretary_check_reason` AS deputySecretaryCheckReason,
+        tssi.`deputy_secretary_check_operator` AS deputySecretaryCheckOperator,
+        DATE_FORMAT(tssi.`deputy_secretary_check_time`,'%Y-%m-%d %T') AS deputySecretaryCheckTime,
+        (SELECT CASE WHEN tssi.`school_check_result` = 1 THEN "未审核" WHEN tssi.`school_check_result` = 2 THEN "审核通过"
+        WHEN tssi.`school_check_result` = 3 THEN "待修改" WHEN tssi.`school_check_result` = 4 THEN "已修改" END) AS schoolCheckResult,
+        tssi.`school_check_reason` AS schoolCheckReason,
+        tssi.`school_check_operator` AS schoolCheckOperator,
+        tssi.`intention_survey_status` AS intentionSurveyStatus,
+        DATE_FORMAT(tssi.`school_check_time`,'%Y-%m-%d %T') AS schoolCheckTime
+        FROM `t_stu_status_information` tssi
+        WHERE tssi.`id` = #{id}
+        <!--AND graduate_year = ${graduateYear} -->
+    </select>
+
+    <select id="queryIdByStuNumber" resultType="Integer">
+        SELECT `id`
+        FROM `t_stu_status_information`
+        WHERE `student_number` = #{stuNumber}
+    </select>
+
+    <select id="countByStuNumber" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `t_stu_status_information`
+        WHERE `student_number` = #{stuNumber}
+    </select>
+
+    <select id="countByCondition" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `t_stu_status_information` tssi
+        <where>
+            <include refid="queryCondition"/>
+        </where>
+    </select>
+
+    <select id="listByCondition" resultType="StatusInfoListDto">
+        SELECT tssi.`id` AS id,
+        tssi.`name` AS name,
+        (SELECT CASE WHEN tssi.`sex` = 1 THEN "男" WHEN tssi.`sex` = 2 THEN "女" END) AS sex,
+        tssi.`student_number` AS stuNumber,
+        tssi.`grade` AS grade,
+        (<include refid="queryMajor"/>) AS major,
+        (SELECT tcc.`college` FROM `t_college_code` tcc WHERE tssi.`college_code` = tcc.`college_id`) AS college,
+        (SELECT CASE WHEN tssi.`counsellor_check_result` = 1 THEN "未审核" WHEN tssi.`counsellor_check_result` = 2 THEN "审核通过"
+        WHEN tssi.`counsellor_check_result` = 3 THEN "待修改" WHEN tssi.`counsellor_check_result` = 4 THEN "已修改" END) AS counsellorCheckResult,
+        tssi.`counsellor_check_time` AS counsellorCheckTime,
+        (SELECT CASE WHEN tssi.`deputy_secretary_check_result` = 1 THEN "未审核" WHEN tssi.`deputy_secretary_check_result` = 2 THEN "审核通过"
+        WHEN tssi.`deputy_secretary_check_result` = 3 THEN "待修改" WHEN tssi.`deputy_secretary_check_result` = 4 THEN "已修改" END) AS deputySecretaryCheckResult,
+        tssi.`deputy_secretary_check_time` AS deputySecretaryCheckTime,
+        (SELECT CASE WHEN tssi.`school_check_result` = 1 THEN "未审核" WHEN tssi.`school_check_result` = 2 THEN "审核通过"
+        WHEN tssi.`school_check_result` = 3 THEN "待修改" WHEN tssi.`school_check_result` = 4 THEN "已修改" END) AS schoolCheckResult,
+        tssi.`school_check_time` AS schoolCheckTime ,
+        tssi.`stu_length` AS stuLength,
+        tssi.`candidate_number` AS candidateNumber,
+        tssi.`id_number` AS idNumber,
+        tssi.`weipei_unit` AS weipeiUnit,
+        tssi.`origin_place` AS originPlace,
+        tssi.`origin_place_import` AS originPlaceImport,
+        tssi.`other_major`  AS otherMajor,
+        tssi.`major_qualification`  AS majorQualification,
+        tssi.`major_code`  AS majorCode,
+        (SELECT tsc.`school` FROM `t_school_code` tsc WHERE tssi.`school_code` = tsc.`school_id`) AS school,
+        (SELECT tqc.`qualification` FROM `t_qualification_code` tqc WHERE tssi.`qualification_code` = tqc.`qualification_id`) AS qualification,
+        (SELECT tnc.`nation` FROM `t_nation_code` tnc WHERE tssi.`nation_code` = tnc.`nation_id`) AS nation ,
+        (SELECT tpc.`political_stand` FROM `t_political_code` tpc  WHERE tssi.`political_stand_code` = tpc.`political_stand_id`) AS politicalStand,
+        (SELECT ttmc.`training_mode` FROM `t_training_mode_code` ttmc  WHERE tssi.`training_mode_code` = ttmc.`training_mode_id`) AS trainingMode,
+        (SELECT tnc1.`normal_stu` FROM `t_normal_code` tnc1  WHERE tssi.`normal_stu_code` = tnc1.`normal_stu_id`) AS normalStu,
+        (SELECT tdc.`difficulty_mode` FROM `t_difficulty_code` tdc  WHERE tssi.`difficulty_code` = tdc.`difficulty_id`) AS difficulty
+        FROM `t_stu_status_information` tssi
+        <!--<if test=""></if>-->
+        <where>
+            <include refid="queryCondition"/>
+        </where>
+        ORDER BY tssi.`id` DESC
+        LIMIT #{curPage}, #{pageSize}
+    </select>
+
+    <select id="listIdByCondition" resultType="Integer">
+        SELECT `id`
+        FROM `t_stu_status_information` tssi
+        <where>
+            <include refid="queryCondition"/>
+        </where>
+        ORDER BY tssi.`id` DESC
+        LIMIT #{curPage}, #{pageSize}
+    </select>
+
+    <select id="countMinorityByCondition" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `t_stu_status_information` tssi
+        <where>
+            <include refid="queryMinorityCondition"/>
+        </where>
+    </select>
+
+    <select id="listMinorityByCondition" resultType="StatusInfoListDto">
+        SELECT tssi.`id` AS id,
+        tssi.`name` AS name,
+        tssi.`student_number` AS stuNumber,
+        tssi.`grade` AS grade,
+        (<include refid="queryMajor"/>) AS major,
+        (SELECT tcc.`college` FROM `t_college_code` tcc WHERE tssi.`college_code` = tcc.`college_id`) AS college,
+        (SELECT CASE WHEN tssi.`counsellor_check_result` = 1 THEN "未审核" WHEN tssi.`counsellor_check_result` = 2 THEN "审核通过"
+        WHEN tssi.`counsellor_check_result` = 3 THEN "待修改" WHEN tssi.`counsellor_check_result` = 4 THEN "已修改" END) AS counsellorCheckResult,
+        tssi.`counsellor_check_time` AS counsellorCheckTime,
+        (SELECT CASE WHEN tssi.`deputy_secretary_check_result` = 1 THEN "未审核" WHEN tssi.`deputy_secretary_check_result` = 2 THEN "审核通过"
+        WHEN tssi.`deputy_secretary_check_result` = 3 THEN "待修改" WHEN tssi.`deputy_secretary_check_result` = 4 THEN "已修改" END) AS deputySecretaryCheckResult,
+        tssi.`deputy_secretary_check_time` AS deputySecretaryCheckTime,
+        (SELECT CASE WHEN tssi.`school_check_result` = 1 THEN "未审核" WHEN tssi.`school_check_result` = 2 THEN "审核通过"
+        WHEN tssi.`school_check_result` = 3 THEN "待修改" WHEN tssi.`school_check_result` = 4 THEN "已修改" END) AS schoolCheckResult,
+        tssi.`school_check_time` AS schoolCheckTime
+        FROM `t_stu_status_information` tssi
+        <where>
+            <include refid="queryMinorityCondition"/>
+        </where>
+        ORDER BY tssi.`id` DESC
+        LIMIT #{curPage}, #{pageSize}
+    </select>
+
+    <select id="listMinorityIdByCondition" resultType="Integer">
+        SELECT `id`
+        FROM `t_stu_status_information` tssi
+        <where>
+            <include refid="queryMinorityCondition"/>
+        </where>
+        ORDER BY tssi.`id` DESC
+        LIMIT #{curPage}, #{pageSize}
+    </select>
+
+    <select id="listAllExportInfo" resultType="StudentExportDto">
+        SELECT tssi.`id` AS id,
+        tssi.`name` AS name,
+        tssi.`id_number` AS idNumber,
+        tssi.`candidate_number` AS candidateNumber,
+        tssi.`student_number` AS studentNumber,
+        (SELECT CASE WHEN tssi.`sex` = 1 THEN "男" WHEN tssi.`sex` = 2 THEN "女" END) AS sex,
+        tssi.`nation_code` AS nationCode,
+        (SELECT tnc.`nation` FROM `t_nation_code` tnc WHERE tssi.`nation_code` = tnc.`nation_id`) AS nation,
+        tssi.`political_stand_code` AS politicalStandCode,
+        (SELECT tpc.`political_stand` FROM `t_political_code` tpc WHERE tssi.`political_stand_code` = tpc.`political_stand_id`) AS politicalStand,
+        tssi.`school_code` AS schoolCode,
+        (SELECT tsc.`school` FROM `t_school_code` tsc WHERE tssi.`school_code` = tsc.`school_id`) AS school,
+        tssi.`stu_length` AS stuLength,
+        tssi.`qualification_code` AS qualificationCode,
+        (SELECT tqc.`qualification` FROM `t_qualification_code` tqc WHERE tssi.`qualification_code` = tqc.`qualification_id`) AS qualification,
+        tssi.`college_code` AS collegeCode,
+        (SELECT tcc.`college` FROM `t_college_code` tcc WHERE tssi.`college_code` = tcc.`college_id`) AS college,
+        tssi.`grade` AS grade,
+        tssi.`major_qualification` AS majorQualification,
+        tssi.`major_code` AS majorCode,
+        tssi.`other_major` AS otherMajor,
+        (SELECT tmc.`major_name` FROM `t_major_code` tmc WHERE tssi.`major_code` = tmc.`major_id` AND tssi.`major_qualification` = tmc.`qualification`) AS major,
+        tssi.`intend_whereabouts_code` AS intendWhereaboutsCode,
+        (SELECT twc.`whereaboutgo` FROM `t_whereaboutgo_code` twc WHERE tssi.`intend_whereabouts_code` = twc.`whereaboutgo_id`) AS intendWhereabouts,
+        tssi.`difficulty_code` AS difficultyCode,
+        (SELECT tdc.`difficulty_mode` FROM `t_difficulty_code` tdc WHERE tssi.`difficulty_code` = tdc.`difficulty_id`) AS difficulty,
+        tssi.`normal_stu_code` AS normalStuCode,
+        (SELECT tnc.`normal_stu` FROM `t_normal_code` tnc WHERE tssi.`normal_stu_code` = tnc.`normal_stu_id`) AS normalStu,
+        tssi.`origin_place_code` AS originPlaceCode,
+         (SELECT tpc.`show_name` FROM `t_place_code` tpc WHERE tssi.`origin_place_code` = tpc.`place_id`) AS originPlace,
+        tssi.`training_mode_code` AS trainingModeCode,
+        (SELECT ttmc.`training_mode` FROM `t_training_mode_code` ttmc WHERE tssi.`training_mode_code` = ttmc.`training_mode_id`) AS trainingMode,
+        tssi.`weipei_unit` AS weipeiUnit,
+        tssi.`weipei_unit_place_code` AS weipeiUnitPlaceCode,
+        tssi.`weipei_unit_place` AS weipeiUnitPlace,
+        DATE_FORMAT(tssi.`regist_date`,'%Y-%m-%d') AS registDate,
+        DATE_FORMAT(tssi.`graduation_date`,'%Y-%m-%d') AS graduationDate,
+        tssi.`pre_hukou_location` AS preHukouLocation,
+        (SELECT CASE WHEN tssi.`is_hukou_into_school` = 0 THEN "否" WHEN tssi.`is_hukou_into_school` = 1 THEN "是" END) AS isHukouIntoSchool,
+        tssi.`pre_archive_location` AS preArchiveLocation,
+        (SELECT CASE WHEN tssi.`is_archive_into_school` = 0 THEN "否" WHEN tssi.`is_archive_into_school` = 1 THEN "是" END) AS isArchiveIntoSchool,
+        tssi.`cellphone` AS cellphone,
+        tssi.`cellphone_bak` AS cellphoneBak,
+        tssi.`qq` AS qq,
+        tssi.`email` AS email,
+        tssi.`home_phone` AS homePhone,
+        tssi.`relative_phone` AS relativePhone,
+        tssi.`weixin` AS weixin,
+        tssi.`home_address` AS homeAddress
+        FROM `t_stu_status_information` tssi
+    </select>
+
+    <select id="listExportInfoByCondition" resultType="StudentExportDto">
+        SELECT tssi.`id` AS id,
+        tssi.`name` AS name,
+        tssi.`id_number` AS idNumber,
+        tssi.`candidate_number` AS candidateNumber,
+        tssi.`student_number` AS studentNumber,
+        (SELECT CASE WHEN tssi.`sex` = 1 THEN "男" WHEN tssi.`sex` = 2 THEN "女" END) AS sex,
+        tssi.`nation_code` AS nationCode,
+        (SELECT tnc.`nation` FROM `t_nation_code` tnc WHERE tssi.`nation_code` = tnc.`nation_id`) AS nation,
+        tssi.`political_stand_code` AS politicalStandCode,
+        (SELECT tpc.`political_stand` FROM `t_political_code` tpc WHERE tssi.`political_stand_code` = tpc.`political_stand_id`) AS politicalStand,
+        tssi.`school_code` AS schoolCode,
+        (SELECT tsc.`school` FROM `t_school_code` tsc WHERE tssi.`school_code` = tsc.`school_id`) AS school,
+        tssi.`stu_length` AS stuLength,
+        <!--加上在读学历项-->
+        (SELECT CASE WHEN tssi.`qualification_now` = 1 THEN "本专科生" WHEN tssi.`qualification_now` = 2  THEN "研究生" END) AS qualificationNow,
+        tssi.`qualification_code` AS qualificationCode,
+        (SELECT tqc.`qualification` FROM `t_qualification_code` tqc WHERE tssi.`qualification_code` = tqc.`qualification_id`) AS qualification,
+        tssi.`college_code` AS collegeCode,
+        (SELECT tcc.`college` FROM `t_college_code` tcc WHERE tssi.`college_code` = tcc.`college_id`) AS college,
+        tssi.`grade` AS grade,
+        tssi.`major_qualification` AS majorQualification,
+        tssi.`major_code` AS majorCode,
+        (SELECT tmc.`major_name` FROM `t_major_code` tmc WHERE tssi.`major_code` = tmc.`major_id` AND tssi.`major_qualification` = tmc.`qualification`) AS major,
+        tssi.`other_major` AS otherMajor,
+
+        tssi.`intend_whereabouts_code` AS intendWhereaboutsCode,
+        (SELECT twic.`whereaboutgo` FROM `t_whereaboutgo_intend_code` twic WHERE tssi.`intend_whereabouts_code` = twic.`whereaboutgo_id`) AS intendWhereabouts,
+        tssi.`difficulty_code` AS difficultyCode,
+        (SELECT tdc.`difficulty_mode` FROM `t_difficulty_code` tdc WHERE tssi.`difficulty_code` = tdc.`difficulty_id`) AS difficulty,
+        tssi.`normal_stu_code` AS normalStuCode,
+        (SELECT tnc.`normal_stu` FROM `t_normal_code` tnc WHERE tssi.`normal_stu_code` = tnc.`normal_stu_id`) AS normalStu,
+        tssi.`origin_place_code` AS originPlaceCode,
+         (SELECT tpc.`show_name` FROM `t_place_code` tpc WHERE tssi.`origin_place_code` = tpc.`place_id`) AS originPlace,
+
+        tssi.`training_mode_code` AS trainingModeCode,
+        (SELECT ttmc.`training_mode` FROM `t_training_mode_code` ttmc WHERE tssi.`training_mode_code` = ttmc.`training_mode_id`) AS trainingMode,
+        tssi.`weipei_unit` AS weipeiUnit,
+        tssi.`weipei_unit_place_code` AS weipeiUnitPlaceCode,
+        tssi.`weipei_unit_place` AS weipeiUnitPlace,
+        DATE_FORMAT(tssi.`regist_date`,'%Y-%m-%d') AS registDate,
+        DATE_FORMAT(tssi.`graduation_date`,'%Y-%m-%d') AS graduationDate,
+         <!--户口和档案信息暂时注掉不导出
+        tssi.`pre_hukou_location` AS preHukouLocation,
+        (SELECT CASE WHEN tssi.`is_hukou_into_school` = 0 THEN "否" WHEN tssi.`is_hukou_into_school` = 1 THEN "是" END) AS isHukouIntoSchool,
+        tssi.`pre_archive_location` AS preArchiveLocation,
+        (SELECT CASE WHEN tssi.`is_archive_into_school` = 0 THEN "否" WHEN tssi.`is_archive_into_school` = 1 THEN "是" END) AS isArchiveIntoSchool,
+        -->
+        tssi.`cellphone` AS cellphone,
+        tssi.`cellphone_bak` AS cellphoneBak,
+        tssi.`qq` AS qq,
+        tssi.`email` AS email,
+        tssi.`home_phone` AS homePhone,
+        tssi.`relative_phone` AS relativePhone,
+        tssi.`weixin` AS weixin,
+        tssi.`home_address` AS homeAddress
+        FROM `t_stu_status_information` tssi
+        <where>
+            <include refid="queryCondition"/>
+        </where>
+    </select>
+
+    <sql id="queryCondition">
+        <if test="showUncommitted != 1">
+            tssi.`check_status` &gt; 1
+        </if>
+        <if test="stuType > 0">
+            AND tssi.`stu_type` = #{stuType}
+        </if>
+        <if test="college > 0">
+            AND tssi.`college_code` = #{college}
+        </if>
+        <if test="normalStu > 0">
+            AND tssi.`normal_stu_code` = #{normalStu}
+        </if>
+        <if test="counsellorCheckResult > 0">
+            AND tssi.`counsellor_check_result` = #{counsellorCheckResult}
+        </if>
+        <if test="deputySecretaryCheckResult > 0">
+            AND tssi.`deputy_secretary_check_result` = #{deputySecretaryCheckResult}
+        </if>
+        <if test="schoolCheckResult > 0">
+            AND tssi.`school_check_result` = #{schoolCheckResult}
+        </if>
+        <if test="province > 0">
+            AND tssi.`origin_place_code` LIKE CONCAT(#{province}, '%')
+        </if>
+        <if test="qualification != null and qualification != ''">
+            AND tssi.`qualification_code` = #{qualification}
+        </if>
+        <if test="stuLength > 0">
+            AND tssi.`stu_length` = #{stuLength}
+        </if>
+        <if test="trainingMode > 0">
+            AND tssi.`training_mode_code` = #{trainingMode}
+        </if>
+        <if test="name != null">
+            AND tssi.`name` LIKE CONCAT('%' ,#{name}, '%')
+        </if>
+        <if test="stuNumber != null">
+            AND tssi.`student_number` = #{stuNumber}
+        </if>
+        <if test="idNumber != null">
+            AND tssi.`id_number` = #{idNumber}
+        </if>
+        <if test="candidateNumber != null">
+            AND tssi.`candidate_number` = #{candidateNumber}
+        </if>
+        <if test="sex > 0">
+            AND tssi.`sex` = #{sex}
+        </if>
+        <if test="politicalStand > 0">
+            AND tssi.`political_stand_code` = #{politicalStand}
+        </if>
+
+        <if test="colleges != null and colleges.size() > 0">
+            AND tssi.`college_code` IN
+            <foreach collection="colleges" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="majorCode != null and majorCode != '' and majorCode != '-1'">
+            <choose>
+                <when test="majorCode == '-2'">
+                    AND tssi.`major_code` = ''
+                </when>
+                <otherwise>
+                    AND tssi.`major_code` = #{majorCode}
+                </otherwise>
+            </choose>
+        </if>
+        <if test="majorQualification != null and majorQualification != ''">
+            AND tssi.`major_qualification` = #{majorQualification}
+        </if>
+        <if test="majors != null and majors.size() > 0">
+            AND tssi.`major_code` IN
+            <foreach collection="majors" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qualificationNow > 0">
+            AND tssi.`qualification_now` = #{qualificationNow}
+        </if>
+        <if test="nation != null and nation != ''">
+            AND tssi.`nation_code` = #{nation}
+        </if>
+        <if test="isRegistered == 1">
+            AND tssi.`student_number`
+            NOT IN (SELECT `stu_number` FROM `t_sys_stu_users`)
+        </if>
+        <if test="isRegistered == 0">
+            AND tssi.`student_number`
+            IN (SELECT `stu_number` FROM `t_sys_stu_users`)
+        </if>
+        <if test="trainingMode > 0">
+            AND tssi.`training_mode_code` = #{trainingMode}
+        </if>
+    </sql>
+
+    <sql id="queryMinorityCondition">
+        <if test="showUncommitted != 1">
+            tssi.`check_status` &gt; 1
+        </if>
+        <if test="college > 0">
+            AND tssi.`college_code` = #{college}
+        </if>
+        <if test="province > 0">
+            AND tssi.`origin_place_code` LIKE CONCAT('%',#{province}, '%')
+        </if>
+        <if test="colleges != null and colleges.size() > 0">
+            AND tssi.`college_code` IN
+            <foreach collection="colleges" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="qualificationNow > 0">
+            AND tssi.`qualification_now` = #{qualificationNow}
+        </if>
+        <choose>
+            <when test="nation != null">
+                AND tssi.`nation_code` = #{nation}
+            </when>
+            <otherwise>
+                AND tssi.`nation_code` != "01"
+            </otherwise>
+        </choose>
+    </sql>
+
+    <sql id="queryMajor">
+        SELECT tmc.`major_name`
+        FROM `t_major_code` tmc
+        WHERE tssi.`major_code` = tmc.`major_id`
+        AND tmc.`qualification` = tssi.`major_qualification`
+    </sql>
+
+    <update id="batchAudit">
+        UPDATE `t_stu_status_information`
+        SET `deputy_secretary_check_result` = 2,`deputy_secretary_check_reason` = "信息属实",`deputy_secretary_check_operator` = #{realName}, `deputy_secretary_check_time`= #{date}
+        WHERE `id` IN
+            <foreach collection="ids" open="(" separator="," close=")"  item="id">
+                #{id}
+            </foreach>
+    </update>
+
+    <update id="updateIntentionSurveyStatus">
+        UPDATE `t_stu_status_information`
+        SET intention_survey_status = #{intentionSurveyStatus}
+        WHERE id = #{statusInfoId}
+    </update>
+
+    <select id="queryMajorByQualificationAndCode" resultType="String">
+        SELECT `major_name`
+        FROM `t_major_code`
+        WHERE `qualification` = #{majorQualification}
+        AND `major_id` = #{majorCode}
+    </select>
+
+    <select id="queryProtocolTypeById" resultType="Integer">
+        SELECT `protocol_type` FROM `t_protocol` tpt ,`t_stu_status_information` tssi
+        WHERE tpt.`status_info_id` = tssi.`id` AND tssi.`id` = #{id}
+    </select>
+
+    <select id="listCollegesByStuNumber" resultType="String">
+        SELECT `college_code`
+        FROM `t_stu_status_information`
+        WHERE `student_number` = #{studentNumber}
+    </select>
+</mapper>

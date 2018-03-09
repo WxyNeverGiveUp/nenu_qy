@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pandawork.nenu.oa.mapper.data.CommonCodeMapper">
+
+    <resultMap id="pplaceMap" type="com.pandawork.nenu.oa.common.entity.data.PlaceCode">
+        <result property="placeId" column="place_id"></result>
+        <result property="showName" column="show_name"></result>
+    </resultMap>
+    <select id="listShownameByProvinceId" parameterType="int" resultMap="pplaceMap">
+        SELECT place_id,
+        show_name
+        FROM t_place_code
+        WHERE place_id LIKE CONCAT(#{provinceId}, "%")
+    </select>
+
+    <resultMap id="whereaboutgoMap" type="com.pandawork.nenu.oa.common.entity.data.WhereAboutGoCode">
+        <result property="whereAboutGoId" column="whereaboutgo_id"></result>
+        <result property="whereAboutGo" column="whereaboutgo"></result>
+    </resultMap>
+    <select id="getWhereaboutgoCodeList" resultMap="whereaboutgoMap">
+        SELECT whereaboutgo,whereaboutgo_id FROM t_whereaboutgo_code;
+    </select>
+
+    <resultMap id="jobMap" type="com.pandawork.nenu.oa.common.entity.data.JobCode">
+        <result property="jobId" column="job_id"></result>
+        <result property="job" column="job"></result>
+    </resultMap>
+    <select id="getJobCodeList" resultMap="jobMap">
+        SELECT job , job_id FROM t_job_code;
+    </select>
+
+    <resultMap id="reportMap" type="com.pandawork.nenu.oa.common.entity.data.ReportCode">
+        <result property="reportModeId" column="report_mode_id"></result>
+        <result property="reportMode" column="report_mode"></result>
+    </resultMap>
+    <select id="getReportCodeList" resultMap="reportMap">
+        SELECT report_mode , report_mode_id FROM t_report_code;
+    </select>
+
+    <resultMap id="collegeMap" type="com.pandawork.nenu.oa.common.entity.data.CollegeCode">
+        <result property="collegeId" column="college_id"></result>
+        <result property="college" column="college"></result>
+    </resultMap>
+    <select id="getCollegeCodeList" resultMap="collegeMap">
+        SELECT college,college_id FROM t_college_code;
+    </select>
+
+    <select id="getCollegeCodeById" parameterType="int" resultMap="collegeMap">
+        SELECT college,college_id FROM t_college_code where college_id = #{id};
+    </select>
+
+    <resultMap id="majorMap" type="com.pandawork.nenu.oa.common.entity.data.MajorCode">
+        <result property="majorId" column="major_id"></result>
+        <result property="qualification" column="qualification"></result>
+        <result property="majorName" column="major_name"></result>
+        <result property="majorDivision" column="major_division"></result>
+        <result property="majorClass" column="major_class"></result>
+    </resultMap>
+    <select id="getMajorCodeList" resultMap="majorMap">
+        SELECT * FROM t_major_code order by convert(major_name using gbk) asc;
+    </select>
+
+    <resultMap id="sexMap" type="com.pandawork.nenu.oa.common.entity.data.SexCode">
+        <result property="sex" column="sex"></result>
+        <result property="sexId" column="sex_id"></result>
+    </resultMap>
+    <select id="getSexCodeList" resultMap="sexMap">
+        SELECT sex,sex_id FROM t_sex_code;
+    </select>
+
+    <resultMap id="nationMap" type="com.pandawork.nenu.oa.common.entity.data.NationCode">
+        <result property="nation" column="nation"></result>
+        <result property="nationId" column="nation_id"></result>
+    </resultMap>
+    <select id="getNationCodeList" resultMap="nationMap">
+        SELECT nation,nation_id FROM t_nation_code;
+    </select>
+
+
+    <resultMap id="difficultyMap" type="com.pandawork.nenu.oa.common.entity.data.DifficultyCode">
+        <result property="difficultyMode" column="difficulty_mode"></result>
+        <result property="difficultyId" column="difficulty_id"></result>
+    </resultMap>
+    <select id="getDifficultyCodeList" resultMap="difficultyMap">
+        SELECT difficulty_mode,difficulty_id FROM t_difficulty_code;
+    </select>
+
+    <resultMap id="politicalMap" type="com.pandawork.nenu.oa.common.entity.data.PoliticalCode">
+        <result property="politicalStandId" column="political_stand_id"></result>
+        <result property="politicalStand" column="political_stand"></result>
+    </resultMap>
+    <select id="getPoliticalCodeList" resultMap="politicalMap">
+        SELECT political_stand,political_stand_id FROM t_political_code;
+    </select>
+
+    <resultMap id="normalMap" type="com.pandawork.nenu.oa.common.entity.data.NormalCode">
+        <result property="normalStu" column="normal_stu"></result>
+        <result property="normalStuId" column="normal_stu_id"></result>
+    </resultMap>
+    <select id="getNormalCodeList" resultMap="normalMap">
+        SELECT normal_stu,normal_stu_id FROM t_normal_code;
+    </select>
+
+    <resultMap id="placeMap" type="com.pandawork.nenu.oa.common.entity.data.PlaceCode">
+        <result property="placeId" column="place_id"></result>
+        <result property="place" column="place"></result>
+        <result property="showName" column="show_name"></result>
+        <result property="placeClassId" column="place_class_id"></result>
+        <result property="placeClass" column="place_class"></result>
+    </resultMap>
+    <select id="getPlaceCodeList" resultMap="placeMap">
+        SELECT * FROM t_place_code;
+    </select>
+
+    <resultMap id="insModeMap" type="com.pandawork.nenu.oa.common.entity.data.InsModeCode">
+        <result property="insMode" column="ins_mode"></result>
+        <result property="insModeId" column="ins_mode_id"></result>
+    </resultMap>
+    <select id="getInsModeCodeList" resultMap="insModeMap">
+        SELECT ins_mode,ins_mode_id FROM t_insmode_code;
+    </select>
+
+    <resultMap id="insFieldMap" type="com.pandawork.nenu.oa.common.entity.data.InsFieldCode">
+        <result property="insFieldId" column="ins_field_id"></result>
+        <result property="insField" column="ins_field"></result>
+    </resultMap>
+    <select id="getInsFieldCodeList" resultMap="insFieldMap">
+        SELECT ins_field,ins_field_id FROM t_insfield_code;
+    </select>
+
+    <resultMap id="trainingModeMap" type="com.pandawork.nenu.oa.common.entity.data.TrainingModeCode">
+        <result property="trainingModeId" column="training_mode_id"></result>
+        <result property="trainingMode" column="training_mode"></result>
+    </resultMap>
+    <select id="getTrainingModeCodeList" resultMap="trainingModeMap">
+        SELECT training_mode,training_mode_id FROM t_training_mode_code;
+    </select>
+
+</mapper>

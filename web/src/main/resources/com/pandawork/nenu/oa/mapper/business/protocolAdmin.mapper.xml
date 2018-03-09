@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pandawork.nenu.oa.mapper.business.ProtocolAdminMapper">
+
+    <!--测试用的 管理员不办理业务-->
+    <insert id="newProtocol"
+             parameterType="com.pandawork.nenu.oa.common.entity.business.Protocol">
+        INSERT INTO `t_protocol`(`protocol_type`,`status_info_id`)
+        VALUES (#{protocolType},#{statusInfoId})
+    </insert>
+
+    <update id="updateCheckResultAndCheckOperator"
+            parameterType="com.pandawork.nenu.oa.common.entity.business.Protocol">
+        UPDATE `t_protocol`
+        SET `check_protocol_result` = #{checkProtocolResult}, `check_protocol_operator` = #{checkProtocolOperator}
+        WHERE t_protocol.id = #{id}
+    </update>
+
+    <update id="updateCheckReason"
+             parameterType="com.pandawork.nenu.oa.common.entity.business.Protocol">
+        UPDATE `t_protocol`
+        SET `check_protocol_reason` = #{checkProtocolReason}
+        WHERE t_protocol.id = #{id}
+    </update>
+
+    <update id="updateFetchPlaceAndFetchTime"
+            parameterType="com.pandawork.nenu.oa.common.entity.business.Protocol">
+        UPDATE `t_protocol`
+        SET `fetch_place` = #{fetchPlace}, `fetch_time` = #{fetchTime}
+        WHERE t_protocol.id = #{id}
+    </update>
+
+    <!--list All ProtocolAdminListDto -->
+    <select id="queryProtocolAdminListDto"
+             resultType="com.pandawork.nenu.oa.common.dto.business.ProtocolAdminListDto">
+        SELECT
+        tssi.name AS name,
+        (SELECT CASE WHEN tssi.sex = 1 THEN '男' WHEN tssi.sex = 2 THEN '女' END) AS sex,
+        tssi.student_number AS stuNumber,
+        tssi.grade AS grade,
+        tmc.major_name AS major,
+        tcc.college AS college,
+        tssi.stu_length AS stuLength,
+        tqc.qualification AS qualification,
+        tssi.candidate_number AS candidateNumber,
+        tssi.id_number AS idNumber,
+        tnc.nation AS nation,
+        tsc.school AS school,
+        trmc.training_mode AS trainingMode,
+        tssi.weipei_unit AS weipeiUnit,
+        tssi.origin_place AS originPlace,
+        rpc.political_stand AS politicalStand,
+        tnco.normal_stu AS normalStu,
+        tdc.difficulty_mode AS difficulty,
+        tp.check_protocol_result AS checkProtocolResult,
+        tp.check_protocol_reason AS checkProtocolReason,
+        tp.check_protocol_operator AS checkProtocolOperator,
+        tp.check_protocol_time AS checkProtocolTime,
+        tp.protocol_type AS protocolType,
+        tpp.name AS freeTeacherProvince,
+        tp.fetch_place AS fetchPlace,
+        tp.fetch_time AS fetchTime
+        FROM `t_protocol` tp
+        LEFT JOIN `t_stu_status_information` tssi ON tp.status_info_id = tssi.id
+        LEFT JOIN `t_major_code` tmc ON tssi.major_code = tmc.major_id AND tssi.major_qualification = tmc.qualification
+        LEFT JOIN `t_college_code` tcc ON tssi.college_code = tcc.college_id
+        LEFT JOIN `t_qualification_code` tqc ON tssi.qualification_code = tqc.qualification_id
+        LEFT JOIN `t_nation_code` tnc ON tssi.nation_code = tnc.nation_id
+        LEFT JOIN `t_school_code` tsc ON tssi.school_code = tsc.school_id
+        LEFT JOIN  t_training_mode_code trmc ON tssi.training_mode_code = trmc.training_mode_id
+        LEFT JOIN t_political_code rpc ON tssi.political_stand_code = rpc.political_stand_id
+        LEFT JOIN t_normal_code tnco ON tssi.normal_stu_code = tnco.normal_stu_id
+        LEFT JOIN t_difficulty_code tdc ON tssi.difficulty_code = tdc.difficulty_id
+        LEFT JOIN t_param_province tpp ON tp.free_teacher_province = tpp.code
+        ORDER BY tp.create_time DESC
+  </select>
+
+    <!-- 条件查询 借鉴学籍了 -->
+    <select id="queryProtocolAdminListDtoByConditions"
+            resultType="com.pandawork.nenu.oa.common.dto.business.ProtocolAdminListDto">
+        SELECT tssi.id AS id,
+        tp.id AS protocolId,
+        tssi.name AS name,
+        (SELECT CASE WHEN tssi.sex = 1 THEN '男' WHEN tssi.sex = 2 THEN '女' END) AS sex,
+        tssi.student_number AS stuNumber,
+        tssi.grade AS grade,
+        (SELECT tmc.major_name FROM t_major_code tmc WHERE tssi.major_code = tmc.major_id AND tssi.major_qualification = tmc.qualification) AS major,
+        (SELECT tcc.college FROM t_college_code tcc WHERE tssi.college_code = tcc.college_id) AS college,
+        tssi.stu_length AS stuLength,
+        (SELECT tqc.qualification FROM t_qualification_code tqc WHERE tssi.qualification_code = tqc.qualification_id) AS qualification,
+        tssi.candidate_number AS candidateNumber,
+        tssi.id_number AS idNumber,
+        (SELECT tnc.nation FROM t_nation_code tnc WHERE tssi.nation_code = tnc.nation_id) AS nation,
+        (SELECT tsc.school FROM t_school_code tsc WHERE tssi.school_code = tsc.school_id) AS school,
+        (SELECT ttmc.training_mode FROM t_training_mode_code ttmc WHERE tssi.training_mode_code = ttmc.training_mode_id) AS trainingMode,
+        tssi.weipei_unit AS weipeiUnit,
+        (SELECT tpc.`show_name` FROM `t_place_code` tpc WHERE tssi.`origin_place_code` = tpc.`place_id`) AS originPlace,
+        (SELECT tpc.political_stand FROM t_political_code tpc WHERE tssi.political_stand_code = tpc.political_stand_id) AS politicalStand,
+        (SELECT tnc.normal_stu FROM t_normal_code tnc WHERE tssi.normal_stu_code = tnc.normal_stu_id) AS normalStu,
+        (SELECT tdc.difficulty_mode FROM t_difficulty_code tdc WHERE tssi.difficulty_code = tdc.difficulty_id) AS difficulty,
+        (SELECT CASE
+                WHEN tp.`protocol_type` = 2  THEN "协议污损"
+                WHEN tp.`protocol_type` = 3  THEN "协议丢失"
+                WHEN tp.`protocol_type` = 4  THEN "协议解约领新协议"
+                WHEN tp.`protocol_type` = 5  THEN "放弃考研/博领协议"
+                WHEN tp.`protocol_type` = 6  THEN "放弃出国/出境领协议"
+                WHEN tp.`protocol_type` = 7  THEN "免师解约"
+                WHEN tp.`protocol_type` = 8  THEN "免师跨省"
+                WHEN tp.`protocol_type` = 9  THEN "定向生领协议"
+                WHEN tp.`protocol_type` = 10 THEN "委培生解约领协议"
+                WHEN tp.`protocol_type` = 11 THEN "定向生解约"
+                WHEN tp.`protocol_type` = 12 THEN "申领协议"
+                END) AS protocolType,
+        tp.`create_time` AS createTime,
+        (SELECT CASE
+                WHEN tp.`check_protocol_result` = 1 THEN "未审核"
+                WHEN tp.`check_protocol_result` = 2 THEN "审核通过"
+                WHEN tp.`check_protocol_result` = 3 THEN "审核未通过待修改"
+                WHEN tp.`check_protocol_result` = 4 THEN "审核未通过已修改"
+                END)  AS checkProtocolResult,
+        tp.check_protocol_reason AS checkProtocolReason,
+        tp.check_protocol_operator AS checkProtocolOperator,
+        tp.check_protocol_time AS checkProtocolTime,
+        tp.free_teacher_province AS freeTeacherProvince,
+        tp.fetch_time AS fetchTime,
+        tp.fetch_place AS fetchPlace
+        FROM t_protocol tp
+        INNER JOIN t_stu_status_information tssi ON tp.status_info_id = tssi.id
+        <where>
+            <include refid="queryCondition" />
+        </where>
+        ORDER BY tp.check_protocol_result, tp.`id` DESC
+        LIMIT #{curPage}, #{pageSize}
+    </select>
+
+    <sql id="queryCondition">
+        <if test="stuType > 0">
+            AND tssi.`stu_type` = #{stuType}
+        </if>
+        <if test="sex > 0">
+            AND tssi.`sex` = #{sex}
+        </if>
+        <if test="college != null and college != ''">
+            AND tssi.`college_code` = #{college}
+        </if>
+        <if test="major != null and major != ''">
+            AND tssi.`major_code` = #{major}
+        </if>
+        <if test="qualification != null and qualification != ''">
+            AND tssi.`qualification_code` = #{qualification}
+        </if>
+        <if test="normalStu > 0">
+            AND tssi.`normal_stu_code` = #{normalStu}
+        </if>
+        <if test="originPlace > 0">
+            AND tssi.`origin_place_code` LIKE CONCAT(#{originPlace}, '%')
+        </if>
+        <if test="stuLength > 0">
+            AND tssi.`stu_length` = #{stuLength}
+        </if>
+        <if test="isRegistered == 1">
+            AND tssi.`student_number`
+            NOT IN (SELECT `stu_number` FROM `t_sys_stu_users`)
+        </if>
+        <if test="isRegistered == 0">
+            AND tssi.`student_number`
+            IN (SELECT `stu_number` FROM `t_sys_stu_users`)
+        </if>
+        <if test="trainingMode > 0">
+            AND tssi.`training_mode_code` = #{trainingMode}
+        </if>
+        <if test="beginCreateTime != null and endCreateTime !=null">
+            AND tp.`create_time` BETWEEN CONCAT(#{beginCreateTime}, "00:00:00") AND  CONCAT(#{endCreateTime} ,"23:59:59")
+        </if>
+        <if test="protocolType > 0">
+            AND tp.`protocol_type` = #{protocolType}
+        </if>
+        <if test="checkProtocolResult > 0">
+            AND tp.`check_protocol_result` = #{checkProtocolResult}
+        </if>
+        <if test="name != null and name != ''">
+            AND tssi.`name` LIKE CONCAT('%' ,#{name}, '%')
+        </if>
+        <if test="stuNumber != null and stuNumber != ''">
+            AND tssi.`student_number` = #{stuNumber}
+        </if>
+        <if test="type != null and type == 'applyForNewProtocol'">
+            AND (tp.`protocol_type` = 2 OR tp.`protocol_type` = 3 OR tp.`protocol_type` = 4 )
+        </if>
+        <if test="type != null and type == 'whereAboutsGoChange'">
+            AND (tp.`protocol_type` = 5 OR tp.`protocol_type` = 6)
+        </if>
+        <if test="type != null and type == 'normalBusiness'">
+            AND (tp.`protocol_type` = 7 OR tp.`protocol_type` = 8)
+        </if>
+        <if test="type != null and type == 'directionnalWeipeiBusiness'">
+            AND (tp.`protocol_type` = 9 OR tp.`protocol_type` = 10 OR tp.`protocol_type` = 11)
+        </if>
+        <if test="type != null and type == 'doctorBusiness'">
+            AND (tp.`protocol_type` = 12)
+        </if>
+
+        <!--
+        <if test="idNumber != null and idNumber != ''">
+            AND tssi.`id_number` = #{idNumber}
+        </if>
+        <if test="candidateNumber != null and candidateNumber != ''">
+            AND tssi.`candidate_number` = #{candidateNumber}
+        </if>
+
+        <if test="createTime != null and createTime != ''">
+            AND tssi.`create_time` = #{createTime}
+        </if>
+
+        <if test="qualification != null and qualification != ''">
+            AND tssi.`qualification_code` = #{qualification}
+        </if>
+
+        <if test="grade > 0">
+            AND tssi.`grade` = #{grade}
+        </if>
+        <if test="major != null and major != '' and major != -1">
+            <choose>
+                <when test="major == '-2'">
+                    AND tssi.`major_code` = ''
+                </when>
+                <otherwise>
+                    AND tssi.`major_code` = #{major}
+                </otherwise>
+            </choose>
+        </if>
+
+
+
+        <if test="checkProtocolResult > 0">
+            AND tp.`check_protocol_result` = #{checkProtocolResult}
+        </if>
+        -->
+        <!--<if test="showUncommitted != 1">-->
+            <!--tssi.`check_status` &gt; 1-->
+        <!--</if>-->
+
+
+
+        <!--<if test="counsellorCheckResult > 0">-->
+            <!--AND tssi.`counsellor_check_result` = #{counsellorCheckResult}-->
+        <!--</if>-->
+        <!--<if test="deputySecretaryCheckResult > 0">-->
+            <!--AND tssi.`deputy_secretary_check_result` = #{deputySecretaryCheckResult}-->
+        <!--</if>-->
+        <!--<if test="schoolCheckResult > 0">-->
+            <!--AND tssi.`school_check_result` = #{schoolCheckResult}-->
+        <!--</if>-->
+        <!--<if test="politicalStand > 0">-->
+            <!--AND tssi.`political_stand_code` = #{politicalStand}-->
+        <!--</if>-->
+
+        <!--<if test="colleges != null and colleges.size() > 0">-->
+            <!--AND tssi.`college_code` IN-->
+            <!--<foreach collection="colleges" item="item" index="index" open="(" separator="," close=")">-->
+                <!--#{item}-->
+            <!--</foreach>-->
+        <!--</if>-->
+        <!--<if test="majorQualification != null and majorQualification != ''">-->
+            <!--AND tssi.`major_qualification` = #{majorQualification}-->
+        <!--</if>-->
+        <!--<if test="majors != null and majors.size() > 0">-->
+            <!--AND tssi.`major_code` IN-->
+            <!--<foreach collection="majors" item="item" index="index" open="(" separator="," close=")">-->
+                <!--#{item}-->
+            <!--</foreach>-->
+        <!--</if>-->
+        <!--<if test="qualificationNow > 0">-->
+            <!--AND tssi.`qualification_now` = #{qualificationNow}-->
+        <!--</if>-->
+        <!--<if test="nation != null and nation != ''">-->
+            <!--AND tssi.`nation_code` = #{nation}-->
+        <!--</if>-->
+
+        <!--<if test="trainingMode > 0">-->
+            <!--AND tssi.`training_mode_code` = #{trainingMode}-->
+        <!--</if>-->
+    </sql>
+
+    <!-- 根据学籍ID列出协议信息(包括之前办理的、按时间降序排序) -->
+    <select id="queryProtocolByStatusInfoId" parameterType="int" resultMap="pw.Protocol">
+        SELECT
+        id AS id,
+        check_protocol_result AS checkProtocolResult,
+        check_protocol_reason AS checkProtocolReason,
+        check_protocol_operator AS checkProtocolOperator,
+        check_protocol_time AS checkProtocolTime,
+        fetch_place AS fetchPlace,
+        protocol_type AS protocolType,
+        status_info_id AS statusInfoId,
+        create_time AS createTime,
+        last_modified_time AS lastModifiedTime,
+        free_teacher_province AS freeTeacherProvince,
+        fetch_time AS fetchTime
+        FROM `t_protocol`
+        WHERE status_info_id = #{statusInfoId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 可以根据下面两个方法结合查询学生最近一次办理的protocol信息 -->
+    <!-- 根据学籍ID查找 该学生呢个最近一次办理业务的 协议ID -->
+    <select id="queryLastProtocolByStatusInfoId" parameterType="int" resultType="int">
+        SELECT id
+        FROM t_protocol
+        WHERE status_info_id = #{statusInfoId}
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 根据协议ID查看协议信息 -->
+    <select id="queryByProtocolId" parameterType="int" resultMap="pw.Protocol">
+        SELECT *
+        FROM t_protocol
+        WHERE id = #{id}
+    </select>
+
+    <!-- CountById 待定吧-->
+    <!--<select id="countById">-->
+        <!--SELECT COUNT(*)-->
+        <!--FROM t_protocol-->
+        <!--WHERE id = #{id}-->
+    <!--</select>-->
+
+    <!-- CountByStatusInfoId -->
+    <select id="countByStatusInfoId" parameterType="int" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `t_protocol`
+        WHERE `status_info_id` = #{statusInfoId};
+    </select>
+
+    <select id="countByCondition" resultType="int">
+        SELECT COUNT(*)
+        FROM
+--         (SELECT *
+--         FROM t_protocol x
+--         WHERE x.id = (
+--         SELECT MAX(y.id)
+--         FROM t_protocol y
+--         WHERE x.status_info_id = y.status_info_id
+--         )) AS tp
+        t_protocol AS tp
+        LEFT JOIN t_stu_status_information tssi ON tp.status_info_id = tssi.id
+
+        <where>
+            <include refid="queryCondition"/>
+        </where>
+    </select>
+
+    <!-- 根据协议ID查询ProtocolAdminListDto -->
+    <select id="queryProtocolAdminListDtoById" parameterType="int"
+            resultType="com.pandawork.nenu.oa.common.dto.business.ProtocolAdminListDto">
+        SELECT
+        tssi.name AS name,
+        (SELECT CASE WHEN tssi.sex = 1 THEN '男' WHEN tssi.sex = 2 THEN '女' END) AS sex,
+        tssi.student_number AS stuNumber,
+        tssi.grade AS grade,
+        tmc.major_name AS major,
+        tcc.college AS college,
+        tssi.stu_length AS stuLength,
+        tqc.qualification AS qualification,
+        tssi.candidate_number AS candidateNumber,
+        tssi.id_number AS idNumber,
+        tnc.nation AS nation,
+        tsc.school AS school,
+        trmc.training_mode AS trainingMode,
+        tssi.weipei_unit AS weipeiUnit,
+        tssi.origin_place AS originPlace,
+        rpc.political_stand AS politicalStand,
+        tnco.normal_stu AS normalStu,
+        tdc.difficulty_mode AS difficulty,
+        tp.check_protocol_result AS checkProtocolResult,
+        tp.check_protocol_reason AS checkProtocolReason,
+        tp.check_protocol_operator AS checkProtocolOperator,
+        tp.check_protocol_time AS checkProtocolTime,
+        tp.protocol_type AS protocolType,
+        tpp.name AS freeTeacherProvince,
+        tp.fetch_place AS fetchPlace,
+        tp.fetch_time AS fetchTime
+        FROM `t_protocol` tp
+        LEFT JOIN `t_stu_status_information` tssi ON tp.status_info_id = tssi.id
+        LEFT JOIN `t_major_code` tmc ON tssi.major_code = tmc.major_id AND tssi.major_qualification = tmc.qualification
+        LEFT JOIN `t_college_code` tcc ON tssi.college_code = tcc.college_id
+        LEFT JOIN `t_qualification_code` tqc ON tssi.qualification_code = tqc.qualification_id
+        LEFT JOIN `t_nation_code` tnc ON tssi.nation_code = tnc.nation_id
+        LEFT JOIN `t_school_code` tsc ON tssi.school_code = tsc.school_id
+        LEFT JOIN  t_training_mode_code trmc ON tssi.training_mode_code = trmc.training_mode_id
+        LEFT JOIN t_political_code rpc ON tssi.political_stand_code = rpc.political_stand_id
+        LEFT JOIN t_normal_code tnco ON tssi.normal_stu_code = tnco.normal_stu_id
+        LEFT JOIN t_difficulty_code tdc ON tssi.difficulty_code = tdc.difficulty_id
+        LEFT JOIN t_param_province tpp ON tp.free_teacher_province = tpp.code
+        WHERE tp.id = #{id}
+    </select>
+
+    <!-- 根据学籍ID查询ProtocolAdminListDto -->
+    <select id="queryProtocolAdminListDtoByStatusInfoId" parameterType="int"
+            resultType="com.pandawork.nenu.oa.common.dto.business.ProtocolAdminListDto">
+        SELECT
+        tssi.name AS name,
+        (SELECT CASE WHEN tssi.sex = 1 THEN '男' WHEN tssi.sex = 2 THEN '女' END) AS sex,
+        tssi.student_number AS stuNumber,
+        tssi.grade AS grade,
+        tmc.major_name AS major,
+        tcc.college AS college,
+        tssi.stu_length AS stuLength,
+        tqc.qualification AS qualification,
+        tssi.candidate_number AS candidateNumber,
+        tssi.id_number AS idNumber,
+        tnc.nation AS nation,
+        tsc.school AS school,
+        trmc.training_mode AS trainingMode,
+        tssi.weipei_unit AS weipeiUnit,
+        tssi.origin_place AS originPlace,
+        rpc.political_stand AS politicalStand,
+        tnco.normal_stu AS normalStu,
+        tdc.difficulty_mode AS difficulty,
+        tp.check_protocol_result AS checkProtocolResult,
+        tp.check_protocol_reason AS checkProtocolReason,
+        tp.check_protocol_operator AS checkProtocolOperator,
+        tp.check_protocol_time AS checkProtocolTime,
+        tp.protocol_type AS protocolType,
+        tpp.name AS freeTeacherProvince,
+        tp.fetch_place AS fetchPlace,
+        tp.fetch_time AS fetchTime
+        FROM `t_protocol` tp
+        LEFT JOIN `t_stu_status_information` tssi ON tp.status_info_id = tssi.id
+        LEFT JOIN `t_major_code` tmc ON tssi.major_code = tmc.major_id AND tssi.major_qualification = tmc.qualification
+        LEFT JOIN `t_college_code` tcc ON tssi.college_code = tcc.college_id
+        LEFT JOIN `t_qualification_code` tqc ON tssi.qualification_code = tqc.qualification_id
+        LEFT JOIN `t_nation_code` tnc ON tssi.nation_code = tnc.nation_id
+        LEFT JOIN `t_school_code` tsc ON tssi.school_code = tsc.school_id
+        LEFT JOIN  t_training_mode_code trmc ON tssi.training_mode_code = trmc.training_mode_id
+        LEFT JOIN t_political_code rpc ON tssi.political_stand_code = rpc.political_stand_id
+        LEFT JOIN t_normal_code tnco ON tssi.normal_stu_code = tnco.normal_stu_id
+        LEFT JOIN t_difficulty_code tdc ON tssi.difficulty_code = tdc.difficulty_id
+        LEFT JOIN t_param_province tpp ON tp.free_teacher_province = tpp.code
+        WHERE tp.status_info_id = #{statusInfoId}
+        ORDER BY tp.create_time DESC
+    </select>
+    
+    <select id="queryAgreementNumberExist" parameterType="String" resultType="int">
+        SELECT COUNT(*)
+        FROM t_dispatch_info
+        WHERE agreement_number = #{agreementNumber}
+    </select>
+
+    <select id="queryProtocolByType" parameterType="Integer"
+            resultType="com.pandawork.nenu.oa.common.dto.business.ProtocolExportDto">
+        SELECT tssi.name AS stuName,
+                tssi.name AS name,
+                tssi.student_number AS studentNumber,
+                (SELECT CASE tssi.sex WHEN 1 THEN "男" WHEN 2 THEN "女" END) AS sex,
+                (SELECT tnc.`nation` FROM `t_nation_code` tnc WHERE tssi.`nation_code` = tnc.`nation_id`) AS nation ,
+                tpc.political_stand AS politicalStand,
+                tssi.candidate_number AS candidateNumber,
+                tssi.id_number AS idNumber,
+                tssi.stu_length AS stuLength,
+                (SELECT tqc.`qualification` FROM `t_qualification_code` tqc WHERE tssi.`qualification_code` = tqc.`qualification_id`) AS qualification,
+                (SELECT tcc.`college` FROM `t_college_code` tcc WHERE tssi.`college_code` = tcc.`college_id`) AS college,
+                tssi.grade AS grade,
+                (SELECT tnc.`normal_stu` FROM `t_normal_code` tnc WHERE tssi.`normal_stu_code` = tnc.`normal_stu_id`) AS normalStu,
+                (SELECT ttmc.`training_mode` FROM `t_training_mode_code` ttmc WHERE tssi.`training_mode_code` = ttmc.`training_mode_id`) AS trainingMode,
+                DATE_FORMAT(tssi.`regist_date`,'%Y-%m-%d') AS registDate,
+                DATE_FORMAT(tssi.`graduation_date`,'%Y-%m-%d') AS graduationDate,
+                (SELECT twic.`whereaboutgo` FROM `t_whereaboutgo_intend_code` twic WHERE tssi.`intend_whereabouts_code` = twic.`whereaboutgo_id`) AS intendWhereabouts,
+                (SELECT tdc.`difficulty_mode` FROM `t_difficulty_code` tdc WHERE tssi.`difficulty_code` = tdc.`difficulty_id`) AS difficulty,
+                tssi.cellphone AS cellphone,
+                tssi.cellphone_bak AS cellphoneBak,
+                tssi.qq AS qq,
+                tssi.weixin AS weixin,
+                tssi.relative_phone AS relativePhone,
+                (SELECT tpc.`place_class` FROM t_place_code tpc WHERE tpc.`place_id` = tssi.`origin_place_code`) AS originPlaceType,
+                (SELECT tmc.`major_name` FROM `t_major_code` tmc WHERE tssi.`major_code` = tmc.`major_id` AND tssi.`major_qualification` = tmc.`qualification`) AS major,
+                (SELECT tpc.`show_name` FROM `t_place_code` tpc WHERE tssi.`origin_place_code` = tpc.`place_id`) AS originPlace,
+                tssi.email AS email,
+                tssi.home_address AS homeAddress,
+                tssi.`weipei_unit` AS weipeiUnit,
+                (CASE tp.protocol_type
+                          WHEN 2 THEN "协议污损"
+                          WHEN 3 THEN "协议丢失"
+                          WHEN 4 THEN "协议解约领新协议"
+                          WHEN 5 THEN "放弃考研/博领协议"
+                          WHEN 6 THEN "放弃出国/出境领协议"
+                          WHEN 7 THEN "免师解约"
+                          WHEN 8 THEN "免师跨省"
+                          WHEN 9 THEN "定向生领协议"
+                          WHEN 10 THEN "委培生解约领协议"
+                          WHEN 11 THEN "定向生解约"
+                          WHEN 12 THEN "博士生申领协议"
+                          ELSE " "
+                          END
+                          )AS protocolType,
+                (CASE tp.check_protocol_result
+                         WHEN 1 THEN "未审核"
+                         WHEN 2 THEN "审核通过"
+                         WHEN 3 THEN "审核未通过待修改"
+                         WHEN 4 THEN "审核未通过已修改"
+                         ELSE ""
+                         END
+                         ) AS result,
+                tp.check_protocol_reason AS reason,
+                tp.check_protocol_operator AS operator,
+                DATE_FORMAT(tp.check_protocol_time,'%Y-%m-%d') AS checkTime,
+                tp.fetch_place AS fetchPlace,
+                DATE_FORMAT(tp.fetch_time, '%Y-%m-%d') AS fetchTime,
+                (SELECT tpp.name FROM t_param_province AS tpp WHERE tp.free_teacher_province = tpp.code)AS freeTeacherProvice
+        FROM t_protocol AS tp
+          LEFT JOIN t_stu_status_information AS tssi ON tp.status_info_id = tssi.id
+          LEFT JOIN t_nation_code AS tnc ON tssi.nation_code = tnc.nation_id
+          LEFT JOIN t_political_code AS tpc ON tssi.political_stand_code = tpc.political_stand_id
+        WHERE CASE #{type}
+          WHEN 1 THEN tp.protocol_type IN (2,3,4)
+          WHEN 2 THEN tp.protocol_type IN (5,6)
+          WHEN 3 THEN tp.protocol_type IN (7,8)
+          WHEN 4 THEN tp.protocol_type IN (9,10,11)
+          WHEN 5 THEN tp.protocol_type IN (12)
+          END
+    </select>
+
+    <!--<sql id="queryCondition">-->
+        <!--&lt;!&ndash;如果需要导出条件在这里添加  不会写。。。&ndash;&gt;-->
+    <!--</sql>-->
+</mapper>

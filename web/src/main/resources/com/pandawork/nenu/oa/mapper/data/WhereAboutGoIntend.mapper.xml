@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pandawork.nenu.oa.mapper.data.WhereAboutGoIntendMapper">
+
+    <select id="queryByCode" resultMap="pw.WhereAboutGoIntendCode">
+        SELECT `id`, `whereaboutgo_id`, `whereaboutgo`
+         FROM `t_whereaboutgo_intend_code`
+        WHERE `whereaboutgo_id` = #{whereAboutGoIntendId}
+    </select>
+
+    <select id="listAll" resultMap="pw.WhereAboutGoIntendCode">
+         SELECT `id`, `whereaboutgo_id`, `whereaboutgo`
+         FROM `t_whereaboutgo_intend_code`
+    </select>
+
+</mapper>

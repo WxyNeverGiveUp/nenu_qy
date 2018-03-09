@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.user.StudentUserMapper">
+
+    <select id="queryByStuNumber" resultMap="pw.StudentUser">
+        SELECT `id`, `stu_number`, `name`
+        FROM `t_sys_stu_users`
+        WHERE `stu_number` = #{stuNumber}
+    </select>
+
+    <select id="queryNameByStuNumber" resultType="String">
+        SELECT `name`
+        FROM `t_sys_stu_users`
+        WHERE `stu_number` = #{stuNumber}
+    </select>
+
+    <select id="queryNameById" resultType="String">
+        SELECT `name`
+        FROM `t_sys_stu_users`
+        WHERE `id` = #{id}
+    </select>
+
+    <select id="countByStuNumber" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `t_sys_stu_users`
+        WHERE `stu_number` = #{stuNumber}
+    </select>
+</mapper>

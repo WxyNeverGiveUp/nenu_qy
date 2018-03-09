@@ -1,0 +1,1010 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pandawork.nenu.oa.mapper.data.StudentMapper">
+
+    <select id="getStudentInfomation" resultMap="pw.StudentInfomation">
+      SELECT
+            ts.id AS id,
+            ts.exam_id AS examId ,
+            ts.name AS name ,
+            ts.id_number AS idNumber ,
+            ts.sex_id AS sexId ,
+            tsc.sex AS sex ,
+            ts.dob AS dob ,
+            ts.exam_id AS examId ,
+            ts.nation_id AS nationId ,
+            tnc.nation AS nation ,
+            ts.political_stand_id AS politicalStandId ,
+            tpc.political_stand AS politicalStand ,
+            ts.school_id AS schoolId ,
+            tschool.school AS school ,
+            ts.tele AS tele ,
+            ts.college_id AS collegeId ,
+            ts.college_name AS collegeName,
+            ts.modify_time AS modifyTime ,
+            ts.student_class AS studentClass ,
+            ts.student_id AS studentId ,
+            ts.qualification_id AS qualificationId ,
+            ts.qualification_study AS qualification ,
+            tqc.qualification AS graduatQualification ,
+            ts.major_id AS majorId ,
+            tmc.major_name AS major ,
+            tmc.major_name AS majorField ,
+            tmc.major_division AS majorDivision,
+            ts.training_mode_id AS trainingModeId ,
+            ts.weipei_insitution AS weipeiInsitution ,
+            ttmc.training_mode AS trainingMode ,
+            ts.native_place_id AS nativePlaceId ,
+            tplace.show_name AS nativePlace ,
+            ts.stu_length AS stuLength ,
+            ts.regist_time AS registTime ,
+            ts.graduation_time AS graduationTime ,
+            ts.difficulty_id AS difficultyTypeId ,
+            tdc.difficulty_mode AS difficultyType ,
+            ts.grade AS grade,
+            ts.normal_stu_id AS normalStuId ,
+            tnormal.normal_stu AS normalStu ,
+            ts.whereaboutgo_id AS whereaboutgoId ,
+            twc.whereaboutgo AS whereaboutgo ,
+            ts.institution_id AS institutionId ,
+            ts.institution_name AS institutionName ,
+            ts.ins_mode_id AS insModeId ,
+            tic.ins_mode AS insMode ,
+            ts.ins_field_id AS insFieldId ,
+            tinsfield.ins_field AS insField ,
+            ts.ins_place_id AS insPlaceId ,
+            tpc2.show_name AS insPlace ,
+            ts.job_id AS jobId ,
+            tjc.job AS jobType ,
+            ts.report_mode_id AS reportModeId ,
+            t_report_code.report_mode AS reportMode,
+            ts.report_ins AS reportIns ,
+            ts.des_ins_id AS desInsId ,
+            tpc3.show_name AS desIns ,
+            ts.report_num_id AS reportNumId ,
+            ts.report_start_time AS reportStartTime ,
+            ts.verify_status AS verifyStatus,
+            ts.wherewantgo AS wherewantgo ,
+            ts.wherewantgo_ins AS wherewantgoIns ,
+            ts.work_difficulty_mode AS workDifficultyMode,
+            ts.agreement_number as agreementNumber,
+            ts.native_place_remind as nativePlaceRemind,
+            ts.remark as remark
+      FROM
+			t_stu_info ts
+			left join t_sex_code tsc on ts.sex_id = tsc.sex_id
+			left join t_nation_code tnc on ts.nation_id = tnc.nation_id
+			left join t_political_code tpc on ts.political_stand_id = tpc.political_stand_id
+			left join t_school_code tschool on ts.school_id = tschool.school_id
+			left join t_qualification_code tqc on ts.qualification_id = tqc.qualification_id
+			left join t_major_code tmc on ts.major_id = tmc.major_id
+					and
+						(CASE ts.qualification_study
+						WHEN '本科' THEN
+							( tmc.qualification = '本科专业')
+						ELSE (tmc.qualification = '研究生专业')
+						END )
+
+			left join t_training_mode_code ttmc on ts.training_mode_id = ttmc.training_mode_id
+			left join t_place_code tplace on ts.native_place_id = tplace.place_id
+			left join t_difficulty_code tdc on ts.difficulty_id = tdc.difficulty_id
+			left join t_normal_code tnormal on ts.normal_stu_id = tnormal.normal_stu_id
+			left join t_whereaboutgo_code twc on ts.whereaboutgo_id = twc.whereaboutgo_id
+			left join t_insmode_code tic on ts.ins_mode_id = tic.ins_mode_id
+			left join t_insfield_code tinsfield on ts.ins_field_id = tinsfield.ins_field_id
+			left join t_place_code tpc2 on ts.ins_place_id = tpc2.place_id
+			left join t_job_code tjc on ts.job_id = tjc.job_id
+			left join t_place_code tpc3 on ts.des_ins_id = tpc3.place_id
+			left join t_report_code on ts.report_mode_id = t_report_code.report_mode_id
+    </select>
+
+    <select id="getStudentInfomationByYear" parameterType="Integer" resultMap="pw.StudentInfomation">
+        SELECT
+        ts.exam_id AS examId ,
+        ts.name AS name ,
+        ts.id_number AS idNumber ,
+        ts.sex_id AS sexId ,
+        tsc.sex AS sex ,
+        ts.nation_id AS nationId ,
+        tnc.nation AS nation ,
+        ts.political_stand_id AS politicalStandId ,
+        tpc.political_stand AS politicalStand ,
+        ts.school_id AS schoolId ,
+        tschool.school AS school ,
+        ts.college_id AS collegeId ,
+        ts.student_class AS studentClass ,
+        ts.student_id AS studentId ,
+        ts.qualification_id AS qualificationId ,
+        tqc.qualification AS graduatQualification ,
+        ts.major_id AS majorId ,
+        tmc.major_name AS major ,
+        tmc.major_name AS majorField ,
+        ts.training_mode_id AS trainingModeId ,
+        ts.weipei_insitution AS weipeiInsitution ,
+        ttmc.training_mode AS trainingMode ,
+        ts.native_place_id AS nativePlaceId ,
+        tplace.show_name AS nativePlace ,
+        ts.stu_length AS stuLength ,
+        ts.regist_time AS registTime ,
+        ts.graduation_time AS graduationTime ,
+        ts.difficulty_id AS difficultyTypeId ,
+        tdc.difficulty_mode AS difficultyType ,
+        ts.normal_stu_id AS normalStuId ,
+        tnormal.normal_stu AS normalStu ,
+        ts.whereaboutgo_id AS whereaboutgoId ,
+        twc.whereaboutgo AS whereaboutgo ,
+        ts.institution_id AS institutionId ,
+        ts.institution_name AS institutionName ,
+        ts.ins_mode_id AS insModeId ,
+        tic.ins_mode AS insMode ,
+        ts.ins_field_id AS insFieldId ,
+        tinsfield.ins_field AS insField ,
+        ts.ins_place_id AS insPlaceId ,
+        tpc2.show_name AS insPlace ,
+        ts.job_id AS jobId ,
+        tjc.job AS jobType ,
+        ts.report_mode_id AS reportModeId ,
+        t_report_code.report_mode AS reportMode,
+        ts.report_ins AS reportIns ,
+        ts.des_ins_id AS desInsId ,
+        tpc3.show_name AS desIns ,
+        ts.report_num_id AS reportNumId ,
+        ts.report_start_time AS reportStartTime ,
+        ts.verify_status AS verifyStatus,
+        ts.wherewantgo AS wherewantgo ,
+        ts.wherewantgo_ins AS wherewantgoIns ,
+        ts.work_difficulty_mode AS workDifficultyMode,
+        ts.agreement_number as agreementNumber,
+        ts.native_place_remind as nativePlaceRemind,
+        ts.remark as remark
+        FROM
+        t_stu_info ts
+        left join t_sex_code tsc on ts.sex_id = tsc.sex_id
+        left join t_nation_code tnc on ts.nation_id = tnc.nation_id
+        left join t_political_code tpc on ts.political_stand_id = tpc.political_stand_id
+        left join t_school_code tschool on ts.school_id = tschool.school_id
+        left join t_qualification_code tqc on ts.qualification_id = tqc.qualification_id
+        left join t_major_code tmc on ts.major_id = tmc.major_id
+        and
+        (CASE ts.qualification_study
+        WHEN '本科' THEN
+        ( tmc.qualification = '本科专业')
+        ELSE (tmc.qualification = '研究生专业')
+        END )
+
+        left join t_training_mode_code ttmc on ts.training_mode_id = ttmc.training_mode_id
+        left join t_place_code tplace on ts.native_place_id = tplace.place_id
+        left join t_difficulty_code tdc on ts.difficulty_id = tdc.difficulty_id
+        left join t_normal_code tnormal on ts.normal_stu_id = tnormal.normal_stu_id
+        left join t_whereaboutgo_code twc on ts.whereaboutgo_id = twc.whereaboutgo_id
+        left join t_insmode_code tic on ts.ins_mode_id = tic.ins_mode_id
+        left join t_insfield_code tinsfield on ts.ins_field_id = tinsfield.ins_field_id
+        left join t_place_code tpc2 on ts.ins_place_id = tpc2.place_id
+        left join t_job_code tjc on ts.job_id = tjc.job_id
+        left join t_place_code tpc3 on ts.des_ins_id = tpc3.place_id
+        left join t_report_code on ts.report_mode_id = t_report_code.report_mode_id
+        WHERE SUBSTRING(ts.graduation_time,1,4)  = #{year}
+    </select>
+
+    <insert id="insertStudentInfomation" parameterType="com.pandawork.nenu.oa.common.entity.data.StudentInfomation">
+          INSERT INTO
+            t_stu_info( exam_id , student_id , name , sex_id , dob ,
+            id_number , political_stand_id , nation_id,
+            school_id, major_id , college_id , college_name , qualification_study , qualification_id ,
+            stu_length,regist_time,grade,
+            graduation_time , training_mode_id , normal_stu_id , native_place_id
+            )
+            VALUES (
+            #{examId} , #{studentId} , #{name} , (SELECT sex_id FROM t_sex_code WHERE sex = #{sex}),
+            #{dob} , #{idNumber} , (SELECT political_stand_id FROM t_political_code WHERE political_stand = #{politicalStand}),
+            (SELECT nation_id FROM t_nation_code WHERE nation = #{nation}) , #{schoolId} , #{majorId} ,
+            (SELECT college_id FROM t_college_code WHERE college = #{collegeName}),
+            #{collegeName} , #{qualification} , #{qualificationId} , #{stuLength} , #{registTime} , #{grade} ,
+            #{graduationTime} , #{trainingModeId}, #{normalStuId} , #{nativePlaceId}
+            );
+    </insert>
+
+    <select id="selectStuByCondition" parameterType="com.pandawork.nenu.oa.common.dto.data.StudentQueryDto" resultMap="pw.StudentInfomation">
+        select
+            ts.id AS id,
+            ts.exam_id AS examId ,
+            ts.id_number AS idNumber ,
+            ts.name AS name ,
+            ts.qualification_study AS qualification,
+            ts.sex_id AS sexId ,
+            tsc.sex AS sex ,
+            ts.grade AS grade,
+            ts.dob as dob,
+            ts.nation_id AS nationId ,
+            tnc.nation AS nation ,
+            ts.political_stand_id AS politicalStandId ,
+            tpc.political_stand AS politicalStand ,
+            ts.school_id AS schoolId ,
+            tschool.school AS school ,
+            ts.college_id AS collegeId ,
+            ts.college_name AS collegeName,
+            ts.student_class AS studentClass ,
+            ts.student_id AS studentId ,
+            ts.qualification_id AS qualificationId ,
+            tqc.qualification AS graduatQualification ,
+            ts.major_id AS majorId ,
+            tmc.major_name AS major ,
+            tmc.major_name AS majorField ,
+            tmc.major_division AS majorDivision,
+            ts.training_mode_id AS trainingModeId ,
+            ts.weipei_insitution AS weipeiInsitution ,
+            ttmc.training_mode AS trainingMode ,
+            ts.native_place_id AS nativePlaceId ,
+            tplace.show_name AS fromPlace,
+            ts.stu_length AS stuLength ,
+            ts.regist_time AS registTime ,
+            ts.graduation_time AS graduationTime ,
+            ts.difficulty_id AS difficultyTypeId ,
+            tdc.difficulty_mode AS difficultyType ,
+            ts.normal_stu_id AS normalStuId ,
+            tnormal.normal_stu AS normalStu ,
+            ts.whereaboutgo_id AS whereaboutgoId ,
+            twc.whereaboutgo AS whereaboutgo ,
+            ts.institution_id AS institutionId ,
+            ts.institution_name AS institutionName ,
+            ts.ins_mode_id AS insModeId ,
+            tic.ins_mode AS insMode ,
+            ts.ins_field_id AS insFieldId ,
+            tinsfield.ins_field AS insField ,
+            ts.ins_place_id AS insPlaceId ,
+            tpc2.show_name AS insPlace ,
+            tpc2.area     AS goArea,
+            tpc2.show_name AS goPlace,
+            tpc2.place_class  AS goPlaceType,
+            ts.job_id AS jobId ,
+            tjc.job AS jobType ,
+            ts.report_mode_id AS reportModeId ,
+            t_report_code.report_mode AS reportMode,
+            ts.report_ins AS reportIns ,
+            ts.des_ins_id AS desInsId ,
+            tpc3.show_name AS desIns ,
+            ts.report_num_id AS reportNumId ,
+            ts.report_start_time AS reportStartTime ,
+            ts.verify_status AS verifyStatus,
+            ts.wherewantgo AS wherewantgo ,
+            ts.wherewantgo_ins AS wherewantgoIns ,
+            ts.work_difficulty_mode AS workDifficultyMode,
+            ts.verify_time AS verifyTime,
+            ts.checkin_time AS checkinTime,
+            ts.checkin_status AS checkinStatus,
+        ts.agreement_number as agreementNumber,
+        ts.native_place_remind as nativePlaceRemind,
+        ts.remark as remark
+FROM
+			t_stu_info ts
+			left join t_sex_code tsc on ts.sex_id = tsc.sex_id
+			left join t_nation_code tnc on ts.nation_id = tnc.nation_id
+			left join t_political_code tpc on ts.political_stand_id = tpc.political_stand_id
+			left join t_school_code tschool on ts.school_id = tschool.school_id
+			left join t_qualification_code tqc on ts.qualification_id = tqc.qualification_id
+			left join t_major_code tmc on ts.major_id = tmc.major_id
+					and
+						(CASE ts.qualification_study
+						WHEN '本科' THEN
+							( tmc.qualification = '本科专业')
+						ELSE (tmc.qualification = '研究生专业')
+						END )
+
+			left join t_training_mode_code ttmc on ts.training_mode_id = ttmc.training_mode_id
+			left join t_place_code tplace on ts.native_place_id = tplace.place_id
+			left join t_difficulty_code tdc on ts.difficulty_id = tdc.difficulty_id
+			left join t_normal_code tnormal on ts.normal_stu_id = tnormal.normal_stu_id
+			left join t_whereaboutgo_code twc on ts.whereaboutgo_id = twc.whereaboutgo_id
+			left join t_insmode_code tic on ts.ins_mode_id = tic.ins_mode_id
+			left join t_insfield_code tinsfield on ts.ins_field_id = tinsfield.ins_field_id
+			left join t_place_code tpc2 on ts.ins_place_id = tpc2.place_id
+			left join t_job_code tjc on ts.job_id = tjc.job_id
+			left join t_place_code tpc3 on ts.des_ins_id = tpc3.place_id
+            left join t_report_code on ts.report_mode_id = t_report_code.report_mode_id
+
+        <where>
+            <if test=" grade != 0 and grade != null">
+                grade = #{grade}
+            </if>
+            <if test=" name != null and name.length() != 0">
+                name = #{name}
+            </if>
+            <if test="studentId != null and studentId != 0">
+                AND ts.student_id = #{studentId}
+            </if>
+            <if test="whereaboutgo != null and whereaboutgo.length() != 0">
+                AND whereaboutgo = #{whereaboutgo}
+            </if>
+            <if test="collegeId != null and collegeId != 0">
+                AND ts.college_id = #{collegeId}
+            </if>
+            <if test="qualification != null and qualification.length() != 0" >
+                AND qualification_study = #{qualification}
+            </if>
+            <if test="majorDivision != null and majorDivision.length() != 0 ">
+                AND tmc.major_division = #{majorDivision}
+            </if>
+            <if test="major != null and major.length() != 0 ">
+                AND tmc.major_name = #{major}
+            </if>
+            <if test="majorId != null and majorId.length() != 0 ">
+                AND ts.major_id = #{majorId}
+            </if>
+            <if test="sex != null and sex.length() != 0">
+                AND sex = #{sex}
+            </if>
+           <if test="nation != null and nation.length() != 0 ">
+                AND nation = #{nation}
+            </if>
+            <if test="difficultyType != null and difficultyType.length() != 0 ">
+                AND tdc.difficulty_mode = #{difficultyType}
+            </if>
+            <if test="politicalStand != null and politicalStand.length() != 0 ">
+                AND tpc.political_stand  = #{politicalStand}
+            </if>
+            <if test="normalStu != null and normalStu.length() != 0 ">
+                AND tnormal.normal_stu = #{normalStu}
+            </if>
+            <if test="graduateClass!= null and graduateClass.length() != 0 ">
+                AND graduation_time LIKE CONCAT(#{graduateClass}, "%" )
+            </if>
+            <!--<if test="fromPlace != null and fromPlace.length() != 0 ">-->
+                <!--AND tplace.show_name LIKE CONCAT(#{fromPlace}, "%")-->
+            <!--</if>-->
+            <if test="fromPlace != null and fromPlace.length() != 0 ">
+                AND tplace.place_id = #{fromPlace}
+            </if>
+            <if test="fromProvince != null and fromProvince.length() != 0 ">
+                AND tplace.place_id LIKE CONCAT(#{fromProvince},"%")
+            </if>
+            <if test="goPlaceType!= null and goPlaceType.length() != 0 ">
+                AND tpc2.place_class LIKE CONCAT(#{goPlaceType}, "%")
+            </if>
+            <if test="goArea!= null and goArea.length() != 0 ">
+                AND tpc2.area LIKE CONCAT(#{goArea}, "%")
+            </if>
+            <!--<if test="goPlace != null and goPlace.length() != 0 ">-->
+                <!--AND tpc2.show_name LIKE CONCAT(#{goPlace}, "%")-->
+            <!--</if>-->
+            <if test="goPlace != null and goPlace.length() != 0 ">
+                AND tpc2.place_id = #{goPlace}
+            </if>
+            <if test="goProvince != null and goProvince.length() != 0 ">
+                AND tpc2.place_id LIKE CONCAT(#{goProvince},"%")
+            </if>
+
+            <if test="insMode != null and insMode.length() != 0 ">
+                AND tic.ins_mode LIKE CONCAT(#{insMode}, "%")
+            </if>
+            <if test="insField != null and insField.length() != 0 ">
+                AND tinsfield.ins_field LIKE CONCAT(#{insField}, "%")
+            </if>
+            <if test="verifyStatus != null and verifyStatus.length() != 0 ">
+                AND verify_status = #{verifyStatus}
+            </if>
+            <if test="checkinStatus != null and checkinStatus.length() != 0 ">
+                AND checkin_status = #{checkinStatus}
+            </if>
+            <if test="workDifficultyMode != null and workDifficultyMode.length() != 0 ">
+                AND work_difficulty_mode LIKE CONCAT(#{workDifficultyMode}, "%")
+            </if>
+        </where>
+        order by ts.id desc
+        limit #{pCurrent},#{pSize}
+    </select>
+
+    <select id="selectStudentByCondition" parameterType="com.pandawork.nenu.oa.common.dto.data.StudentQueryDto" resultMap="pw.StudentInfomation">
+        select
+        ts.id AS id,
+        ts.exam_id AS examId ,
+        ts.id_number AS idNumber ,
+        ts.name AS name ,
+        ts.qualification_study AS qualification,
+        ts.sex_id AS sexId ,
+        tsc.sex AS sex ,
+        ts.grade AS grade,
+        ts.dob as dob,
+        ts.nation_id AS nationId ,
+        tnc.nation AS nation ,
+        ts.political_stand_id AS politicalStandId ,
+        tpc.political_stand AS politicalStand ,
+        ts.school_id AS schoolId ,
+        tschool.school AS school ,
+        ts.college_id AS collegeId ,
+        ts.college_name AS collegeName,
+        ts.student_class AS studentClass ,
+        ts.student_id AS studentId ,
+        ts.qualification_id AS qualificationId ,
+        tqc.qualification AS graduatQualification ,
+        ts.major_id AS majorId ,
+        tmc.major_name AS major ,
+        tmc.major_name AS majorField ,
+        tmc.major_division AS majorDivision,
+        ts.training_mode_id AS trainingModeId ,
+        ts.weipei_insitution AS weipeiInsitution ,
+        ttmc.training_mode AS trainingMode ,
+        ts.native_place_id AS nativePlaceId ,
+        tplace.show_name AS fromPlace,
+        ts.stu_length AS stuLength ,
+        ts.regist_time AS registTime ,
+        ts.graduation_time AS graduationTime ,
+        ts.difficulty_id AS difficultyTypeId ,
+        tdc.difficulty_mode AS difficultyType ,
+        ts.normal_stu_id AS normalStuId ,
+        tnormal.normal_stu AS normalStu ,
+        ts.whereaboutgo_id AS whereaboutgoId ,
+        twc.whereaboutgo AS whereaboutgo ,
+        ts.institution_id AS institutionId ,
+        ts.institution_name AS institutionName ,
+        ts.ins_mode_id AS insModeId ,
+        tic.ins_mode AS insMode ,
+        ts.ins_field_id AS insFieldId ,
+        tinsfield.ins_field AS insField ,
+        ts.ins_place_id AS insPlaceId ,
+        tpc2.show_name AS insPlace ,
+        tpc2.area     AS goArea,
+        tpc2.show_name AS goPlace,
+        tpc2.place_class  AS goPlaceType,
+        ts.job_id AS jobId ,
+        tjc.job AS jobType ,
+        ts.report_mode_id AS reportModeId ,
+        t_report_code.report_mode AS reportMode,
+        ts.report_ins AS reportIns ,
+        ts.des_ins_id AS desInsId ,
+        tpc3.show_name AS desIns ,
+        ts.report_num_id AS reportNumId ,
+        ts.report_start_time AS reportStartTime ,
+        ts.verify_status AS verifyStatus,
+        ts.wherewantgo AS wherewantgo ,
+        ts.wherewantgo_ins AS wherewantgoIns ,
+        ts.work_difficulty_mode AS workDifficultyMode,
+        ts.verify_time AS verifyTime,
+        ts.checkin_time AS checkinTime,
+        ts.checkin_status AS checkinStatus,
+        ts.agreement_number as agreementNumber,
+        ts.native_place_remind as nativePlaceRemind,
+        ts.remark as remark
+        FROM
+        t_stu_info ts
+        left join t_sex_code tsc on ts.sex_id = tsc.sex_id
+        left join t_nation_code tnc on ts.nation_id = tnc.nation_id
+        left join t_political_code tpc on ts.political_stand_id = tpc.political_stand_id
+        left join t_school_code tschool on ts.school_id = tschool.school_id
+        left join t_qualification_code tqc on ts.qualification_id = tqc.qualification_id
+        left join t_major_code tmc on ts.major_id = tmc.major_id
+        and
+        (CASE ts.qualification_study
+        WHEN '本科' THEN
+        ( tmc.qualification = '本科专业')
+        ELSE (tmc.qualification = '研究生专业')
+        END )
+
+        left join t_training_mode_code ttmc on ts.training_mode_id = ttmc.training_mode_id
+        left join t_place_code tplace on ts.native_place_id = tplace.place_id
+        left join t_difficulty_code tdc on ts.difficulty_id = tdc.difficulty_id
+        left join t_normal_code tnormal on ts.normal_stu_id = tnormal.normal_stu_id
+        left join t_whereaboutgo_code twc on ts.whereaboutgo_id = twc.whereaboutgo_id
+        left join t_insmode_code tic on ts.ins_mode_id = tic.ins_mode_id
+        left join t_insfield_code tinsfield on ts.ins_field_id = tinsfield.ins_field_id
+        left join t_place_code tpc2 on ts.ins_place_id = tpc2.place_id
+        left join t_job_code tjc on ts.job_id = tjc.job_id
+        left join t_place_code tpc3 on ts.des_ins_id = tpc3.place_id
+        left join t_report_code on ts.report_mode_id = t_report_code.report_mode_id
+
+        <where>
+            <if test=" grade != 0 and grade != null">
+                grade = #{grade}
+            </if>
+            <if test=" name != null and name.length() != 0">
+                name = #{name}
+            </if>
+            <if test="studentId != null and studentId != 0">
+                AND ts.student_id = #{studentId}
+            </if>
+            <if test="whereaboutgo != null and whereaboutgo.length() != 0">
+                AND whereaboutgo = #{whereaboutgo}
+            </if>
+            <if test="collegeId != null and collegeId != 0">
+                AND ts.college_id = #{collegeId}
+            </if>
+            <if test="qualification != null and qualification.length() != 0" >
+                AND qualification_study = #{qualification}
+            </if>
+            <if test="majorDivision != null and majorDivision.length() != 0 ">
+                AND tmc.major_division = #{majorDivision}
+            </if>
+            <if test="major != null and major.length() != 0 ">
+                AND tmc.major_name = #{major}
+            </if>
+            <if test="majorId != null and majorId.length() != 0 ">
+                AND ts.major_id = #{majorId}
+            </if>
+            <if test="sex != null and sex.length() != 0">
+                AND sex = #{sex}
+            </if>
+            <if test="nation != null and nation.length() != 0 ">
+                AND nation = #{nation}
+            </if>
+            <if test="difficultyType != null and difficultyType.length() != 0 ">
+                AND tdc.difficulty_mode = #{difficultyType}
+            </if>
+            <if test="politicalStand != null and politicalStand.length() != 0 ">
+                AND tpc.political_stand  = #{politicalStand}
+            </if>
+            <if test="normalStu != null and normalStu.length() != 0 ">
+                AND tnormal.normal_stu = #{normalStu}
+            </if>
+            <if test="graduateClass!= null and graduateClass.length() != 0 ">
+                AND graduation_time LIKE CONCAT(#{graduateClass}, "%" )
+            </if>
+            <!--<if test="fromPlace != null and fromPlace.length() != 0 ">-->
+            <!--AND tplace.show_name LIKE CONCAT(#{fromPlace}, "%")-->
+            <!--</if>-->
+            <if test="fromPlace != null and fromPlace.length() != 0 ">
+                AND tplace.place_id = #{fromPlace}
+            </if>
+            <if test="fromProvince != null and fromProvince.length() != 0 ">
+                AND tplace.place_id LIKE CONCAT(#{fromProvince},"%")
+            </if>
+            <if test="goPlaceType!= null and goPlaceType.length() != 0 ">
+                AND tpc2.place_class LIKE CONCAT(#{goPlaceType}, "%")
+            </if>
+            <if test="goArea!= null and goArea.length() != 0 ">
+                AND tpc2.area LIKE CONCAT(#{goArea}, "%")
+            </if>
+            <!--<if test="goPlace != null and goPlace.length() != 0 ">-->
+            <!--AND tpc2.show_name LIKE CONCAT(#{goPlace}, "%")-->
+            <!--</if>-->
+            <if test="goPlace != null and goPlace.length() != 0 ">
+                AND tpc2.place_id = #{goPlace}
+            </if>
+            <if test="goProvince != null and goProvince.length() != 0 ">
+                AND tpc2.place_id LIKE CONCAT(#{goProvince},"%")
+            </if>
+
+            <if test="insMode != null and insMode.length() != 0 ">
+                AND tic.ins_mode LIKE CONCAT(#{insMode}, "%")
+            </if>
+            <if test="insField != null and insField.length() != 0 ">
+                AND tinsfield.ins_field LIKE CONCAT(#{insField}, "%")
+            </if>
+            <if test="verifyStatus != null and verifyStatus.length() != 0 ">
+                AND verify_status = #{verifyStatus}
+            </if>
+            <if test="checkinStatus != null and checkinStatus.length() != 0 ">
+                AND checkin_status = #{checkinStatus}
+            </if>
+            <if test="workDifficultyMode != null and workDifficultyMode.length() != 0 ">
+                AND work_difficulty_mode LIKE CONCAT(#{workDifficultyMode}, "%")
+            </if>
+        </where>
+        order by ts.id desc
+    </select>
+
+    <select id="countStuByCondition" parameterType="com.pandawork.nenu.oa.common.dto.data.StudentQueryDto" resultType="int">
+        select
+        count(*) AS counts,
+        ts.exam_id AS examId ,
+        ts.id_number AS idNumber ,
+        ts.name AS name ,
+        ts.qualification_study AS qualification,
+        ts.sex_id AS sexId ,
+        tsc.sex AS sex ,
+        ts.grade AS grade,
+        ts.dob as dob,
+        ts.nation_id AS nationId ,
+        tnc.nation AS nation ,
+        ts.political_stand_id AS politicalStandId ,
+        tpc.political_stand AS politicalStand ,
+        ts.school_id AS schoolId ,
+        tschool.school AS school ,
+        ts.college_id AS collegeId ,
+        ts.college_name AS collegeName,
+        ts.student_class AS studentClass ,
+        ts.student_id AS studentId ,
+        ts.qualification_id AS qualificationId ,
+        tqc.qualification AS graduatQualification ,
+        ts.major_id AS majorId ,
+        tmc.major_name AS major ,
+        tmc.major_name AS majorField ,
+        tmc.major_division AS majorDivision,
+        ts.training_mode_id AS trainingModeId ,
+        ts.weipei_insitution AS weipeiInsitution ,
+        ttmc.training_mode AS trainingMode ,
+        ts.native_place_id AS nativePlaceId ,
+        tplace.show_name AS fromPlace,
+        ts.stu_length AS stuLength ,
+        ts.regist_time AS registTime ,
+        ts.graduation_time AS graduationTime ,
+        ts.difficulty_id AS difficultyTypeId ,
+        tdc.difficulty_mode AS difficultyType ,
+        ts.normal_stu_id AS normalStuId ,
+        tnormal.normal_stu AS normalStu ,
+        ts.whereaboutgo_id AS whereaboutgoId ,
+        twc.whereaboutgo AS whereaboutgo ,
+        ts.institution_id AS institutionId ,
+        ts.institution_name AS institutionName ,
+        ts.ins_mode_id AS insModeId ,
+        tic.ins_mode AS insMode ,
+        ts.ins_field_id AS insFieldId ,
+        tinsfield.ins_field AS insField ,
+        ts.ins_place_id AS insPlaceId ,
+        tpc2.show_name AS insPlace ,
+        tpc2.area     AS goArea,
+        tpc2.show_name AS goPlace,
+        tpc2.place_class  AS goPlaceType,
+        ts.job_id AS jobId ,
+        tjc.job AS jobType ,
+        ts.report_mode_id AS reportModeId ,
+        t_report_code.report_mode AS reportMode,
+        ts.report_ins AS reportIns ,
+        ts.des_ins_id AS desInsId ,
+        tpc3.show_name AS desIns ,
+        ts.report_num_id AS reportNumId ,
+        ts.report_start_time AS reportStartTime ,
+        ts.verify_status AS verifyStatus,
+        ts.wherewantgo AS wherewantgo ,
+        ts.wherewantgo_ins AS wherewantgoIns ,
+        ts.work_difficulty_mode AS workDifficultyMode,
+        ts.agreement_number as agreementNumber,
+        ts.native_place_remind as nativePlaceRemind,
+        ts.remark as remark
+        FROM
+        t_stu_info ts
+        left join t_sex_code tsc on ts.sex_id = tsc.sex_id
+        left join t_nation_code tnc on ts.nation_id = tnc.nation_id
+        left join t_political_code tpc on ts.political_stand_id = tpc.political_stand_id
+        left join t_school_code tschool on ts.school_id = tschool.school_id
+        left join t_qualification_code tqc on ts.qualification_id = tqc.qualification_id
+        left join t_major_code tmc on ts.major_id = tmc.major_id
+        and
+        (CASE ts.qualification_study
+        WHEN '本科' THEN
+        ( tmc.qualification = '本科专业')
+        ELSE (tmc.qualification = '研究生专业')
+        END )
+
+        left join t_training_mode_code ttmc on ts.training_mode_id = ttmc.training_mode_id
+        left join t_place_code tplace on ts.native_place_id = tplace.place_id
+        left join t_difficulty_code tdc on ts.difficulty_id = tdc.difficulty_id
+        left join t_normal_code tnormal on ts.normal_stu_id = tnormal.normal_stu_id
+        left join t_whereaboutgo_code twc on ts.whereaboutgo_id = twc.whereaboutgo_id
+        left join t_insmode_code tic on ts.ins_mode_id = tic.ins_mode_id
+        left join t_insfield_code tinsfield on ts.ins_field_id = tinsfield.ins_field_id
+        left join t_place_code tpc2 on ts.ins_place_id = tpc2.place_id
+        left join t_job_code tjc on ts.job_id = tjc.job_id
+        left join t_place_code tpc3 on ts.des_ins_id = tpc3.place_id
+        left join t_report_code on ts.report_mode_id = t_report_code.report_mode_id
+        <where>
+            <if test=" grade != 0 and grade != null">
+                grade = #{grade}
+            </if>
+            <if test=" name != null and name.length() != 0">
+                name = #{name}
+            </if>
+            <if test="studentId != null and studentId != 0">
+                AND ts.student_id = #{studentId}
+            </if>
+            <if test="whereaboutgo != null and whereaboutgo.length() != 0">
+                AND whereaboutgo = #{whereaboutgo}
+            </if>
+            <if test="collegeId != null and collegeId != 0">
+                AND ts.college_id = #{collegeId}
+            </if>
+            <if test="qualification != null and qualification.length() != 0" >
+                AND qualification_study = #{qualification}
+            </if>
+            <if test="majorDivision != null and majorDivision.length() != 0 ">
+                AND tmc.major_division = #{majorDivision}
+            </if>
+            <if test="major != null and major.length() != 0 ">
+                AND tmc.major_name = #{major}
+            </if>
+            <if test="majorId != null and majorId.length() != 0 ">
+                AND ts.major_id = #{majorId}
+            </if>
+            <if test="sex != null and sex.length() != 0">
+                AND sex = #{sex}
+            </if>
+            <if test="nation != null and nation.length() != 0 ">
+                AND nation = #{nation}
+            </if>
+            <if test="difficultyType != null and difficultyType.length() != 0 ">
+                AND tdc.difficulty_mode = #{difficultyType}
+            </if>
+            <if test="politicalStand != null and politicalStand.length() != 0 ">
+                AND tpc.political_stand  = #{politicalStand}
+            </if>
+            <if test="normalStu != null and normalStu.length() != 0 ">
+                AND tnormal.normal_stu = #{normalStu}
+            </if>
+            <if test="graduateClass!= null and graduateClass.length() != 0 ">
+                AND graduation_time LIKE CONCAT(#{graduateClass}, "%" )
+            </if>
+            <!--<if test="fromPlace != null and fromPlace.length() != 0 ">-->
+            <!--AND tplace.show_name LIKE CONCAT(#{fromPlace}, "%")-->
+            <!--</if>-->
+            <if test="fromPlace != null and fromPlace.length() != 0 ">
+                AND tplace.place_id = #{fromPlace}
+            </if>
+            <if test="fromProvince != null and fromProvince.length() != 0 ">
+                AND tplace.place_id LIKE CONCAT(#{fromProvince},"%")
+            </if>
+            <if test="goPlaceType!= null and goPlaceType.length() != 0 ">
+                AND tpc2.place_class LIKE CONCAT(#{goPlaceType}, "%")
+            </if>
+            <if test="goArea!= null and goArea.length() != 0 ">
+                AND tpc2.area LIKE CONCAT(#{goArea}, "%")
+            </if>
+            <!--<if test="goPlace != null and goPlace.length() != 0 ">-->
+            <!--AND tpc2.show_name LIKE CONCAT(#{goPlace}, "%")-->
+            <!--</if>-->
+            <if test="goPlace != null and goPlace.length() != 0 ">
+                AND tpc2.place_id = #{goPlace}
+            </if>
+            <if test="goProvince != null and goProvince.length() != 0 ">
+                AND tpc2.place_id LIKE CONCAT(#{goProvince},"%")
+            </if>
+            <if test="insMode != null and insMode.length() != 0 ">
+                AND tic.ins_mode LIKE CONCAT(#{insMode}, "%")
+            </if>
+            <if test="insField != null and insField.length() != 0 ">
+                AND tinsfield.ins_field LIKE CONCAT(#{insField}, "%")
+            </if>
+            <if test="verifyStatus != null and verifyStatus.length() != 0 ">
+                AND verify_status = #{verifyStatus}
+            </if>
+            <if test="checkinStatus != null and checkinStatus.length() != 0 ">
+                AND checkin_status = #{checkinStatus}
+            </if>
+            <if test="workDifficultyMode != null and workDifficultyMode.length() != 0 ">
+                AND work_difficulty_mode LIKE CONCAT(#{workDifficultyMode}, "%")
+            </if>
+        </where>
+    </select>
+
+    <select id="getStudentByExamId" parameterType="String" resultType="com.pandawork.nenu.oa.common.entity.data.StudentInfomation">
+        select
+            ts.exam_id AS examId ,
+            ts.name AS name ,
+            ts.id_number AS idNumber ,
+            ts.sex_id AS sexId ,
+            tsc.sex AS sex ,
+            ts.grade AS grade,
+            ts.dob as dob,
+            ts.nation_id AS nationId ,
+            tnc.nation AS nation ,
+            ts.political_stand_id AS politicalStandId ,
+            tpc.political_stand AS politicalStand ,
+            ts.school_id AS schoolId ,
+            tschool.school AS school ,
+            ts.college_id AS collegeId ,
+            ts.college_name AS collegeName,
+            ts.student_class AS studentClass ,
+            ts.student_id AS studentId ,
+            ts.qualification_id AS qualificationId ,
+            tqc.qualification AS graduatQualification ,
+            ts.major_id AS majorId ,
+            tmc.major_name AS major ,
+            tmc.major_name AS majorField ,
+            ts.training_mode_id AS trainingModeId ,
+            ts.weipei_insitution AS weipeiInsitution ,
+            ttmc.training_mode AS trainingMode ,
+            ts.native_place_id AS nativePlaceId ,
+            tplace.show_name AS nativePlace ,
+            ts.stu_length AS stuLength ,
+            ts.regist_time AS registTime ,
+            ts.graduation_time AS graduationTime ,
+            ts.difficulty_id AS difficultyTypeId ,
+            tdc.difficulty_mode AS difficultyType ,
+            ts.normal_stu_id AS normalStuId ,
+            tnormal.normal_stu AS normalStu ,
+            ts.whereaboutgo_id AS whereaboutgoId ,
+            twc.whereaboutgo AS whereaboutgo ,
+            ts.institution_id AS institutionId ,
+            ts.institution_name AS institutionName ,
+            ts.ins_mode_id AS insModeId ,
+            tic.ins_mode AS insMode ,
+            ts.ins_field_id AS insFieldId ,
+            tinsfield.ins_field AS insField ,
+            ts.ins_place_id AS insPlaceId ,
+            tpc2.show_name AS insPlace ,
+            ts.job_id AS jobId ,
+            tjc.job AS jobType ,
+            ts.report_mode_id AS reportModeId ,
+            t_report_code.report_mode AS reportMode,
+            ts.report_ins AS reportIns ,
+            ts.des_ins_id AS desInsId ,
+            tpc3.show_name AS desIns ,
+            ts.report_num_id AS reportNumId ,
+            ts.report_start_time AS reportStartTime ,
+            ts.verify_status AS verifyStatus,
+            ts.wherewantgo AS wherewantgo ,
+            ts.wherewantgo_ins AS wherewantgoIns ,
+            ts.work_difficulty_mode AS workDifficultyMode,
+            ts.agreement_number as agreementNumber,
+            ts.native_place_remind as nativePlaceRemind,
+            ts.remark as remark
+FROM
+			t_stu_info ts
+			left join t_sex_code tsc on ts.sex_id = tsc.sex_id
+			left join t_nation_code tnc on ts.nation_id = tnc.nation_id
+			left join t_political_code tpc on ts.political_stand_id = tpc.political_stand_id
+			left join t_school_code tschool on ts.school_id = tschool.school_id
+			left join t_qualification_code tqc on ts.qualification_id = tqc.qualification_id
+			left join t_major_code tmc on ts.major_id = tmc.major_id
+					and
+						(CASE ts.qualification_study
+						WHEN '本科' THEN
+							( tmc.qualification = '本科专业')
+						ELSE (tmc.qualification = '研究生专业')
+						END )
+
+			left join t_training_mode_code ttmc on ts.training_mode_id = ttmc.training_mode_id
+			left join t_place_code tplace on ts.native_place_id = tplace.place_id
+			left join t_difficulty_code tdc on ts.difficulty_id = tdc.difficulty_id
+			left join t_normal_code tnormal on ts.normal_stu_id = tnormal.normal_stu_id
+			left join t_whereaboutgo_code twc on ts.whereaboutgo_id = twc.whereaboutgo_id
+			left join t_insmode_code tic on ts.ins_mode_id = tic.ins_mode_id
+			left join t_insfield_code tinsfield on ts.ins_field_id = tinsfield.ins_field_id
+			left join t_place_code tpc2 on ts.ins_place_id = tpc2.place_id
+			left join t_job_code tjc on ts.job_id = tjc.job_id
+			left join t_place_code tpc3 on ts.des_ins_id = tpc3.place_id
+			left join t_report_code on ts.report_mode_id = t_report_code.report_mode_id
+WHERE exam_id = #{examId}
+    </select>
+
+    <delete id="delete" parameterType="int">
+          DELETE FROM t_stu_info WHERE student_id = #{studentId}
+    </delete>
+
+    <select id="selectStuByid" parameterType="int" resultMap="pw.StudentInfomation">
+        select
+        ts.id AS id,
+        ts.tele AS tele,
+        ts.exam_id AS examId ,
+        ts.id_number AS idNumber ,
+        ts.name AS name ,
+        ts.qualification_study AS qualification,
+        ts.sex_id AS sexId ,
+        tsc.sex AS sex ,
+        ts.grade AS grade,
+        ts.dob as dob,
+        ts.nation_id AS nationId ,
+        tnc.nation AS nation ,
+        ts.political_stand_id AS politicalStandId ,
+        tpc.political_stand AS politicalStand ,
+        ts.school_id AS schoolId ,
+        tschool.school AS school ,
+        ts.college_id AS collegeId ,
+        ts.college_name AS collegeName,
+        ts.student_class AS studentClass ,
+        ts.student_id AS studentId ,
+        ts.qualification_id AS qualificationId ,
+        tqc.qualification AS graduatQualification ,
+        ts.major_id AS majorId ,
+        tmc.major_name AS major ,
+        tmc.major_name AS majorField ,
+        tmc.major_division AS majorDivision,
+        ts.training_mode_id AS trainingModeId ,
+        ts.weipei_insitution AS weipeiInsitution ,
+        ttmc.training_mode AS trainingMode ,
+        ts.native_place_id AS nativePlaceId ,
+        tplace.show_name AS fromPlace,
+        ts.stu_length AS stuLength ,
+        ts.regist_time AS registTime ,
+        ts.graduation_time AS graduationTime ,
+        ts.difficulty_id AS difficultyTypeId ,
+        tdc.difficulty_mode AS difficultyType ,
+        ts.normal_stu_id AS normalStuId ,
+        tnormal.normal_stu AS normalStu ,
+        ts.whereaboutgo_id AS whereaboutgoId ,
+        twc.whereaboutgo AS whereaboutgo ,
+        ts.institution_id AS institutionId ,
+        ts.institution_name AS institutionName ,
+        ts.ins_mode_id AS insModeId ,
+        tic.ins_mode AS insMode ,
+        ts.ins_field_id AS insFieldId ,
+        tinsfield.ins_field AS insField ,
+        ts.ins_place_id AS insPlaceId ,
+        tpc2.show_name AS insPlace ,
+        tpc2.area     AS goArea,
+        tpc2.show_name AS goPlace,
+        tpc2.place_class  AS goPlaceType,
+        ts.job_id AS jobId ,
+        tjc.job AS jobType ,
+        ts.report_mode_id AS reportModeId ,
+        t_report_code.report_mode AS reportMode,
+        ts.report_ins AS reportIns ,
+        ts.des_ins_id AS desInsId ,
+        tpc3.show_name AS desIns ,
+        ts.report_num_id AS reportNumId ,
+        ts.report_start_time AS reportStartTime ,
+        ts.verify_status AS verifyStatus,
+        ts.wherewantgo AS wherewantgo ,
+        ts.wherewantgo_ins AS wherewantgoIns ,
+        ts.work_difficulty_mode AS workDifficultyMode,
+        ts.verify_time AS verifyTime,
+        ts.checkin_time AS checkinTime,
+        ts.checkin_status AS checkinStatus,
+        ts.document_in AS documentIn,
+        ts.hukou_in AS hukouIn,
+        ts.docIns AS docIns,
+        ts.hukouIns AS hukouIns,
+        ts.agreement_number as agreementNumber,
+        ts.native_place_remind as nativePlaceRemind,
+        ts.company_id as companyId,
+        ts.remark as remark
+        FROM
+        t_stu_info ts
+        left join t_sex_code tsc on ts.sex_id = tsc.sex_id
+        left join t_nation_code tnc on ts.nation_id = tnc.nation_id
+        left join t_political_code tpc on ts.political_stand_id = tpc.political_stand_id
+        left join t_school_code tschool on ts.school_id = tschool.school_id
+        left join t_qualification_code tqc on ts.qualification_id = tqc.qualification_id
+        left join t_major_code tmc on ts.major_id = tmc.major_id
+        and
+        (CASE ts.qualification_study
+        WHEN '本科' THEN
+        ( tmc.qualification = '本科专业')
+        ELSE (tmc.qualification = '研究生专业')
+        END )
+
+        left join t_training_mode_code ttmc on ts.training_mode_id = ttmc.training_mode_id
+        left join t_place_code tplace on ts.native_place_id = tplace.place_id
+        left join t_difficulty_code tdc on ts.difficulty_id = tdc.difficulty_id
+        left join t_normal_code tnormal on ts.normal_stu_id = tnormal.normal_stu_id
+        left join t_whereaboutgo_code twc on ts.whereaboutgo_id = twc.whereaboutgo_id
+        left join t_insmode_code tic on ts.ins_mode_id = tic.ins_mode_id
+        left join t_insfield_code tinsfield on ts.ins_field_id = tinsfield.ins_field_id
+        left join t_place_code tpc2 on ts.ins_place_id = tpc2.place_id
+        left join t_job_code tjc on ts.job_id = tjc.job_id
+        left join t_place_code tpc3 on ts.des_ins_id = tpc3.place_id
+        left join t_report_code on ts.report_mode_id = t_report_code.report_mode_id
+      where ts.id = #{id}
+    </select>
+
+    <resultMap id="majorMap" type="com.pandawork.nenu.oa.common.entity.data.MajorCode">
+        <result property="majorId" column="major_id"></result>
+        <result property="qualification" column="qualification"></result>
+        <result property="majorName" column="major_name"></result>
+        <result property="majorDivision" column="major_division"></result>
+        <result property="majorClass" column="major_class"></result>
+    </resultMap>
+
+    <select id="getMajorByCollegeName" parameterType="String" resultMap="majorMap">
+    SELECT
+            tmc.major_id AS majorId,
+            tmc.major_name AS majorName,
+            tmc.qualification AS qualification,
+            tmc.major_division AS majorDivision,
+            tmc.major_class AS majorClass,
+            count(distinct tmc.major_id)
+    FROM
+            t_stu_info ts left join t_major_code tmc
+    ON
+            ts.major_id = tmc.major_id
+            AND
+            (CASE ts.qualification_study
+            WHEN '本科' THEN
+            ( tmc.qualification = '本科专业')
+            ELSE (tmc.qualification = '研究生专业')
+            END )
+    WHERE
+            ts.college_name = #{collegeName}
+    <if test="qualification != null and qualification.length() != 0" >
+        AND
+        ts.qualification_study=#{qualification}
+    </if>
+    GROUP BY tmc.major_id
+
+    </select>
+
+
+    <select id="getMajorNameByMajorId" parameterType="String" resultType="String">
+        select major_name from t_major_code where major_id = #{majoId}
+    </select>
+
+</mapper>
+

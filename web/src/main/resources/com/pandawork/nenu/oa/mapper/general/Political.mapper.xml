@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pandawork.nenu.oa.mapper.general.PoliticalMapper">
+
+    <select id="queryByPoliticalStandId" resultMap="pw.PoliticalCode">
+        SELECT `id`, `political_stand_id`, `political_stand`
+        FROM `t_political_code`
+        WHERE `political_stand_id` = #{politicalStandId}
+    </select>
+
+    <select id="listAll" resultMap="pw.PoliticalCode">
+        SELECT `id`, `political_stand_id`, `political_stand`
+        FROM `t_political_code`
+    </select>
+
+</mapper>
